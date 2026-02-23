@@ -3,241 +3,189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraPOS | South Africa Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>AuraPOS | Firebase Realtime Sync</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --primary-grad: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
+            --primary-yellow: #FFD700;
             --white: #ffffff;
-            --bg-light: #F7F9FC;
-            --dark-text: #1A1C1E;
-            --muted-text: #6C757D;
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --bg: #f8f9fa;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --hover-bg: #f5f6f5;
+            --low-stock: #ffeaa7;
+            --out-stock: #ff7675;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--dark); display: flex; min-height: 100vh; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-
-        body { background-color: var(--bg-light); color: var(--dark-text); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-        /* Sidebar Navigation */
+        /* Sidebar */
         sidebar {
-            width: 280px;
+            width: 260px;
             background: var(--white);
-            border-right: 1px solid rgba(0,0,0,0.05);
-            padding: 40px 30px;
+            border-right: 3px solid var(--primary-yellow);
+            padding: 30px;
             position: fixed;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            z-index: 100;
         }
+        .logo { font-weight: 800; font-size: 24px; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .logo-sq { width: 35px; height: 35px; background: var(--primary-yellow); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #000; }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 50px;
-            animation: fadeInDown 0.8s ease;
+        .nav-menu { list-style: none; margin-top: 20px; }
+        .nav-item { margin: 8px 0; }
+        .nav-link {
+            display: flex; align-items: center; padding: 12px 16px; color: var(--dark);
+            text-decoration: none; border-radius: 8px; transition: all 0.25s ease; font-weight: 500;
         }
+        .nav-link:hover { background: var(--hover-bg); transform: translateX(6px); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .nav-link.active { background: var(--primary-yellow); color: #000; font-weight: 700; transform: translateX(4px); }
+        .nav-link span { margin-left: 12px; }
 
-        .logo-sq {
-            width: 45px;
-            height: 45px;
-            background: var(--primary-grad);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 22px;
-            color: #000;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        /* Content Area */
+        main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .section-title { margin-bottom: 25px; border-left: 5px solid var(--primary-yellow); padding-left: 15px; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; }
+        .btn { background: var(--primary-yellow); border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.25s ease; }
+        .btn:hover { background: #eec100; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,215,0,0.3); }
+
+        .search-container { margin-bottom: 15px; }
+        .search-input { padding: 10px; font-size: 14px; }
+
+        /* Stock highlighting */
+        tr.low-stock { background: var(--low-stock); }
+        tr.out-stock { background: var(--out-stock); color: #fff; }
+        .till-item.low-stock { background: var(--low-stock); color: #000; }
+        .till-item.out-stock { background: var(--out-stock); color: #fff; }
+
+        /* Customer accordions */
+        .category-accordion { margin-bottom: 15px; }
+        .category-header { background: #fff9e1; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; border: 1px solid #ffeaa7; }
+        .category-content { display: none; padding: 10px; }
+        .category-content.active { display: block; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .menu-item {
+            background: #fff9e1; padding: 15px; border-radius: 10px; text-align: center;
+            border: 1px solid #ffeaa7; transition: all 0.2s ease;
         }
+        .menu-item:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
+        .discounted { color: #e74c3c; font-weight: bold; text-decoration: line-through; margin-right: 8px; }
 
-        .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--gray); font-size: 12px; padding: 10px; }
+        td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
 
-        /* Main Dashboard */
-        main { margin-left: 280px; padding: 50px; width: calc(100% - 280px); animation: fadeIn 1s ease; }
+        .screen { border-radius: 12px; padding: 20px; height: 350px; overflow-y: auto; position: relative; }
+        .screen-label { position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: bold; background: var(--primary-yellow); padding: 2px 8px; border-radius: 4px; }
+        .till-screen { background: #1e272e; color: #fff; }
+        .till-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #34495e; transition: all 0.2s; }
+        .sell-btn { background: #00b894; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s ease; }
+        .sell-btn:hover:not(:disabled) { background: #00a37e; transform: scale(1.05); }
+        .sell-btn:disabled { background: #4a6b62; cursor: not-allowed; opacity: 0.6; }
 
-        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
-        .greeting h1 { font-size: 32px; font-weight: 800; }
-        .status-pill { background: #E3FCEF; color: #00B894; padding: 6px 16px; border-radius: 50px; font-size: 13px; font-weight: 600; }
-
-        /* Modern Grid */
-        .dashboard-grid { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
-
-        .card {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            transition: var(--transition);
-        }
-
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
-
-        h3 { font-size: 18px; margin-bottom: 25px; font-weight: 700; opacity: 0.9; }
-
-        /* Form Inputs */
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: var(--muted-text); margin-bottom: 8px; }
-        input {
-            width: 100%;
-            padding: 14px 20px;
-            border-radius: 16px;
-            border: 1.5px solid #F1F3F5;
-            background: #F8F9FA;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        input:focus { outline: none; border-color: #FFD700; background: #fff; box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1); }
-
-        /* Shimmer Pill Button */
-        .btn-pill {
-            position: relative;
-            overflow: hidden;
-            background: var(--primary-grad);
-            border: none;
-            padding: 16px 30px;
-            border-radius: 50px;
-            color: #000;
-            font-weight: 800;
-            font-size: 15px;
-            cursor: pointer;
-            width: 100%;
-            transition: var(--transition);
-            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .btn-pill:hover { transform: scale(1.02); box-shadow: 0 15px 25px rgba(255, 215, 0, 0.3); }
-
-        .btn-pill::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(60deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-150%) rotate(45deg); }
-            100% { transform: translateX(150%) rotate(45deg); }
-        }
-
-        /* Inventory Table */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
-        th { text-align: left; padding: 0 20px; color: var(--muted-text); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        tr.item-row { background: var(--white); transition: var(--transition); cursor: default; }
-        tr.item-row td { padding: 20px; border-top: 1px solid #F1F3F5; border-bottom: 1px solid #F1F3F5; }
-        tr.item-row td:first-child { border-left: 1px solid #F1F3F5; border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
-        tr.item-row td:last-child { border-right: 1px solid #F1F3F5; border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
-
-        .price-tag { font-weight: 800; color: var(--dark-text); font-size: 16px; }
-        .stock-badge { 
-            padding: 6px 12px; 
-            border-radius: 10px; 
-            font-size: 12px; 
-            font-weight: 700; 
-            background: #FFF9E1; 
-            color: #B8860B;
-        }
-
-        .btn-sell {
-            background: var(--dark-text);
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .btn-sell:hover { background: #000; transform: scale(1.05); }
-        .btn-sell:disabled { background: #CCC; cursor: not-allowed; }
-
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
+        .customer-screen { background: var(--white); border: 2px solid var(--primary-yellow); }
     </style>
 </head>
 <body>
-
     <sidebar>
-        <div class="logo-container">
-            <div class="logo-sq">A</div>
-            <div class="logo-text">AuraPOS</div>
-        </div>
-        <p style="font-size: 12px; font-weight: 700; color: #ADB5BD; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Main Menu</p>
-        <div style="flex-grow: 1;">
-            <p style="margin-bottom: 15px; font-weight: 600; color: var(--dark-text);">Dashboard</p>
-            <p style="margin-bottom: 15px; font-weight: 600; color: var(--muted-text);">Sales History</p>
-            <p style="margin-bottom: 15px; font-weight: 600; color: var(--muted-text);">Settings</p>
-        </div>
-        <div class="status-pill">● System Online</div>
+        <div class="logo"><div class="logo-sq">A</div> AuraPOS</div>
+        <p style="color: var(--gray); font-size: 14px; margin-bottom: 30px;">Cloud Sync: <strong style="color:#00b894">Connected</strong></p>
+
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#" class="nav-link active" data-section="stock"><span>Stock Control</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-section="analytics"><span>Analytics</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-section="sales"><span>Sales Report</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-section="users"><span>Users & Staff</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link" data-section="settings"><span>Settings</span></a></li>
+        </ul>
     </sidebar>
 
-    <main>
-        <div class="header-flex">
-            <div class="greeting">
-                <h1>Store Operations</h1>
-                <p style="color: var(--muted-text);">Manage your inventory and sales in South Africa.</p>
+    <main id="mainContent">
+        <h1 class="section-title">Manager Stock Control</h1>
+
+        <div class="dashboard-grid" id="stockSection">
+            <div class="card">
+                <h3>Add New Inventory</h3>
+                <label>Item Name</label>
+                <input type="text" id="itemName" placeholder="e.g. Silk Dress or Cheese Burger">
+
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Price ($)</label>
+                        <input type="number" id="itemPrice" placeholder="0.00" step="0.01">
+                    </div>
+                    <div style="flex:1">
+                        <label>Stock Qty</label>
+                        <input type="number" id="itemQty" placeholder="10" min="0">
+                    </div>
+                </div>
+
+                <label>Category</label>
+                <select id="itemCategory">
+                    <option value="Drinks">Drinks</option>
+                    <option value="Food">Food</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Other" selected>Other</option>
+                </select>
+
+                <label>Discount (%)</label>
+                <input type="number" id="itemDiscount" placeholder="0" min="0" max="100" value="0">
+
+                <button class="btn" id="addBtn">Add to Cloud Database</button>
             </div>
-            <div style="text-align: right;">
-                <p id="clock" style="font-weight: 800; font-size: 18px;"></p>
-                <p style="color: var(--muted-text); font-size: 14px;">Pretoria, ZA</p>
+
+            <div class="card" style="max-height: 380px; overflow-y: auto;">
+                <h3>Live Master Stock</h3>
+                <div class="search-container">
+                    <input type="text" id="masterSearch" class="search-input" placeholder="Search items...">
+                </div>
+                <table id="masterTable">
+                    <thead><tr><th>Item</th><th>Category</th><th>Stock</th><th>Price</th><th>Discount</th></tr></thead>
+                    <tbody id="masterBody"></tbody>
+                </table>
             </div>
         </div>
 
-        <div class="dashboard-grid">
+        <!-- Analytics Section -->
+        <div id="analyticsSection" style="display:none;">
+            <h1 class="section-title">Analytics Dashboard</h1>
             <div class="card">
-                <h3>Add New Product</h3>
-                <div class="input-group">
-                    <label>Product Name</label>
-                    <input type="text" id="itemName" placeholder="e.g. Leather Jacket">
-                </div>
-                <div class="input-group">
-                    <label>Price (Rand)</label>
-                    <input type="number" id="itemPrice" placeholder="R 0.00">
-                </div>
-                <div class="input-group">
-                    <label>Opening Stock</label>
-                    <input type="number" id="itemQty" placeholder="0">
-                </div>
-                <button class="btn-pill" id="addBtn">
-                    <span>Add to Inventory</span>
-                </button>
+                <h3>Stock Value by Item (Top 5)</h3>
+                <canvas id="stockValueChart" height="200"></canvas>
             </div>
+        </div>
 
-            <div class="card">
-                <h3>Live Inventory & Quick Sell</h3>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Product Details</th>
-                                <th>Stock Level</th>
-                                <th>Price</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventoryBody">
-                            </tbody>
-                    </table>
+        <!-- Placeholder sections -->
+        <div id="salesSection" style="display:none;">
+            <h1 class="section-title">Sales Report</h1>
+            <div class="card"><p style="color: var(--gray);">Sales analytics coming soon...</p></div>
+        </div>
+        <div id="usersSection" style="display:none;">
+            <h1 class="section-title">Users & Staff</h1>
+            <div class="card"><p style="color: var(--gray);">User management coming soon...</p></div>
+        </div>
+        <div id="settingsSection" style="display:none;">
+            <h1 class="section-title">Settings</h1>
+            <div class="card"><p style="color: var(--gray);">System settings coming soon...</p></div>
+        </div>
+
+        <h1 class="section-title">Terminal Synchronizations</h1>
+        <div class="system-container">
+            <div class="screen till-screen">
+                <span class="screen-label">CASHIER TILL</span>
+                <div class="search-container">
+                    <input type="text" id="tillSearch" class="search-input" placeholder="Search items..." style="background:#2d3436;color:#fff;border:1px solid #444;">
                 </div>
+                <div id="tillBody"></div>
+            </div>
+            <div class="screen customer-screen">
+                <span class="screen-label">CUSTOMER DISPLAY</span>
+                <div id="customerBody"></div>
             </div>
         </div>
     </main>
@@ -246,86 +194,207 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Provided Firebase Config
+        // REPLACE WITH YOUR FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
-            authDomain: "pinotp-d7ef5.firebaseapp.com",
-            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com",
-            projectId: "pinotp-d7ef5",
-            storageBucket: "pinotp-d7ef5.firebasestorage.app",
-            messagingSenderId: "708458917827",
-            appId: "1:708458917827:web:375de278577df0adcf9776"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_ID",
+            appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const inventoryRef = ref(db, 'inventory');
 
-        // 1. Clock Logic
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('en-ZA');
-        }, 1000);
+        // Navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = {
+            stock: document.getElementById('stockSection'),
+            analytics: document.getElementById('analyticsSection'),
+            sales: document.getElementById('salesSection'),
+            users: document.getElementById('usersSection'),
+            settings: document.getElementById('settingsSection')
+        };
 
-        // 2. Add Item to Firebase
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                Object.values(sections).forEach(sec => sec.style.display = 'none');
+                const sectionId = link.dataset.section;
+                if (sections[sectionId]) sections[sectionId].style.display = 'block';
+            });
+        });
+
+        // Add Item
         document.getElementById('addBtn').addEventListener('click', () => {
-            const name = document.getElementById('itemName').value;
-            const price = document.getElementById('itemPrice').value;
-            const qty = document.getElementById('itemQty').value;
+            const name = document.getElementById('itemName').value.trim();
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const qty = parseInt(document.getElementById('itemQty').value);
+            const category = document.getElementById('itemCategory').value;
+            const discount = parseInt(document.getElementById('itemDiscount').value) || 0;
 
-            if (name && price && qty) {
-                push(inventoryRef, {
-                    name: name,
-                    price: parseFloat(price).toFixed(2),
-                    qty: parseInt(qty)
-                }).then(() => {
-                    document.getElementById('itemName').value = '';
-                    document.getElementById('itemPrice').value = '';
-                    document.getElementById('itemQty').value = '';
-                });
+            if (!name || isNaN(price) || isNaN(qty) || price < 0 || qty < 0 || discount < 0 || discount > 100) {
+                alert("Please fill all fields with valid values.");
+                return;
             }
+
+            push(inventoryRef, {
+                name, price: price.toFixed(2), qty, category, discount
+            });
+
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemPrice').value = '';
+            document.getElementById('itemQty').value = '';
+            document.getElementById('itemDiscount').value = '0';
         });
 
-        // 3. Sync Table with Firebase
+        // Search filters
+        const masterSearch = document.getElementById('masterSearch');
+        const tillSearch = document.getElementById('tillSearch');
+        let allData = {};
+
+        masterSearch.addEventListener('input', () => renderScreens(allData));
+        tillSearch.addEventListener('input', () => renderScreens(allData));
+
+        // Real-time Sync
         onValue(inventoryRef, (snapshot) => {
-            const data = snapshot.val();
-            const tableBody = document.getElementById('inventoryBody');
-            tableBody.innerHTML = '';
-
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const item = data[key];
-                    const row = document.createElement('tr');
-                    row.className = 'item-row';
-                    
-                    row.innerHTML = `
-                        <td><strong style="font-size:15px">${item.name}</strong></td>
-                        <td><span class="stock-badge">${item.qty} units</span></td>
-                        <td class="price-tag">R ${item.price}</td>
-                        <td>
-                            <button class="btn-sell" ${item.qty <= 0 ? 'disabled' : ''} data-id="${key}" data-qty="${item.qty}">
-                                ${item.qty <= 0 ? 'Sold Out' : 'Sell 1 Unit'}
-                            </button>
-                        </td>
-                    `;
-                    
-                    // Add Click Event to Sell Button
-                    const sellBtn = row.querySelector('.btn-sell');
-                    sellBtn.onclick = () => sellItem(key, item.qty);
-                    
-                    tableBody.appendChild(row);
-                });
-            } else {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; padding:40px;">No inventory found. Add your first product.</td></tr>';
-            }
+            allData = snapshot.val() || {};
+            renderScreens(allData);
+            updateAnalytics(allData);
         });
 
-        // 4. Sell Item Function
+        function renderScreens(data) {
+            const masterBody = document.getElementById('masterBody');
+            const tillBody = document.getElementById('tillBody');
+            const customerBody = document.getElementById('customerBody');
+
+            masterBody.innerHTML = '';
+            tillBody.innerHTML = '';
+            customerBody.innerHTML = '';
+
+            if (!data) return;
+
+            const masterFilter = masterSearch.value.toLowerCase().trim();
+            const tillFilter = tillSearch.value.toLowerCase().trim();
+
+            // Group by category for customer screen
+            const byCategory = {};
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                const cat = item.category || 'Other';
+                if (!byCategory[cat]) byCategory[cat] = [];
+                byCategory[cat].push({key, ...item});
+            });
+
+            // Customer screen - accordions
+            Object.keys(byCategory).sort().forEach(cat => {
+                const items = byCategory[cat];
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.textContent = `${cat} (${items.length})`;
+                header.onclick = () => content.classList.toggle('active');
+
+                const content = document.createElement('div');
+                content.className = 'category-content';
+
+                items.forEach(item => {
+                    const discountedPrice = item.price * (1 - (item.discount || 0)/100);
+                    content.innerHTML += `
+                        <div class="menu-item">
+                            <div style="font-weight:bold">${item.name}</div>
+                            <div>
+                                ${item.discount > 0 ? `<span class="discounted">$${item.price}</span>` : ''}
+                                <span style="color:#d4af37; font-size:18px; font-weight:800">$${discountedPrice.toFixed(2)}</span>
+                            </div>
+                            <div style="font-size:10px; color:#666">${item.qty > 0 ? 'IN STOCK' : 'OUT OF STOCK'}</div>
+                        </div>`;
+                });
+
+                const accordion = document.createElement('div');
+                accordion.className = 'category-accordion';
+                accordion.appendChild(header);
+                accordion.appendChild(content);
+                customerBody.appendChild(accordion);
+            });
+
+            // Master & Till (filtered)
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                const nameLower = item.name.toLowerCase();
+
+                if (masterFilter && !nameLower.includes(masterFilter)) return;
+
+                // Master row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${item.category || 'Other'}</td>
+                    <td><strong>${item.qty}</strong></td>
+                    <td>$${item.price}</td>
+                    <td>${item.discount ? item.discount + '%' : '-'}</td>`;
+                if (item.qty <= 0) row.classList.add('out-stock');
+                else if (item.qty <= 5) row.classList.add('low-stock');
+                masterBody.appendChild(row);
+
+                if (tillFilter && !nameLower.includes(tillFilter)) return;
+
+                // Till item
+                const tillItem = document.createElement('div');
+                tillItem.className = 'till-item';
+                if (item.qty <= 0) tillItem.classList.add('out-stock');
+                else if (item.qty <= 5) tillItem.classList.add('low-stock');
+
+                tillItem.innerHTML = `
+                    <span>${item.name} (x${item.qty}) ${item.discount ? '(-' + item.discount + '%)' : ''}</span>
+                    <button class="sell-btn" ${item.qty <= 0 ? 'disabled' : ''}>SELL</button>`;
+                tillItem.querySelector('.sell-btn').onclick = () => sellItem(key, item.qty);
+                tillBody.appendChild(tillItem);
+            });
+        }
+
         function sellItem(key, currentQty) {
             if (currentQty > 0) {
                 const itemRef = ref(db, `inventory/${key}`);
                 update(itemRef, { qty: currentQty - 1 });
             }
+        }
+
+        // Analytics Chart (Stock Value - Top 5)
+        let stockChart;
+        function updateAnalytics(data) {
+            const ctx = document.getElementById('stockValueChart').getContext('2d');
+            const items = Object.values(data || {}).map(item => ({
+                name: item.name,
+                value: item.qty * parseFloat(item.price)
+            })).sort((a,b) => b.value - a.value).slice(0,5);
+
+            const labels = items.map(i => i.name);
+            const values = items.map(i => i.value);
+
+            if (stockChart) stockChart.destroy();
+
+            stockChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Stock Value ($)',
+                        data: values,
+                        backgroundColor: 'rgba(255, 215, 0, 0.6)',
+                        borderColor: 'rgba(255, 215, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
         }
     </script>
 </body>

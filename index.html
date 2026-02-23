@@ -1244,6 +1244,7 @@
             allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
             updateLiveTicker();
             updateKPICards();
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
 
         // Edit Modal with Image Support
@@ -1348,7 +1349,7 @@
             setTimeout(() => { toast.className = ""; }, 3000);
         }
 
-        // Charts (updated with top selling chart)
+        // Charts (updated with top selling chart and sales over time)
         Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
         const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
 
@@ -1393,13 +1394,78 @@
             });
         }
 
-        function updateTimeChart(labels, data) {
+        // NEW: Sales Over Time Chart Function
+        function updateTimeChartFromSales(salesData) {
             const ctx = document.getElementById('salesTimeChart').getContext('2d');
+            
+            // Group sales by date
+            const salesByDate = {};
+            
+            if (salesData && salesData.length > 0) {
+                salesData.forEach(sale => {
+                    const date = new Date(sale.timestamp);
+                    const dateKey = date.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
+                    
+                    if (!salesByDate[dateKey]) {
+                        salesByDate[dateKey] = 0;
+                    }
+                    salesByDate[dateKey] += parseFloat(sale.revenue || 0);
+                });
+            }
+            
+            // Sort dates chronologically
+            const sortedDates = Object.keys(salesByDate).sort((a, b) => {
+                const dateA = new Date(a + ' 2024');
+                const dateB = new Date(b + ' 2024');
+                return dateA - dateB;
+            });
+            
+            const labels = sortedDates.length > 0 ? sortedDates : ['No Data'];
+            const data = sortedDates.length > 0 ? sortedDates.map(date => salesByDate[date]) : [0];
+            
             if (timeChart) timeChart.destroy();
+            
             timeChart = new Chart(ctx, {
                 type: 'line',
-                data: { labels: labels, datasets: [{ data: data, borderColor: '#1A1C1E', backgroundColor: 'rgba(26,28,30,0.1)', fill: true, tension: 0.4 }] },
-                options: chartOptions
+                data: { 
+                    labels: labels, 
+                    datasets: [{ 
+                        label: 'Revenue (R)',
+                        data: data, 
+                        borderColor: '#1A1C1E', 
+                        backgroundColor: 'rgba(255, 215, 0, 0.1)', 
+                        fill: true, 
+                        tension: 0.4,
+                        pointBackgroundColor: '#FFD700',
+                        pointBorderColor: '#1A1C1E',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }] 
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'R ' + context.parsed.y.toFixed(2);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R ' + value;
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
 
@@ -1568,6 +1634,7 @@
             allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
             updateLiveTicker();
             updateKPICards();
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
 
         onValue(inventoryRef, (snapshot) => {
@@ -1577,6 +1644,8 @@
         // Initialize
         window.addEventListener('load', () => {
             updateKPICards();
+            // Initialize empty sales chart
+            updateTimeChartFromSales([]);
         });
     </script>
 </body>

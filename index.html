@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraPOS | Firebase Realtime Sync</title>
+    <style>
+        :root {
+            --primary-yellow: #FFD700;
+            --white: #ffffff;
+            --bg: #f8f9fa;
+            --dark: #2d3436;
+            --gray: #636e72;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: var(--dark); display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        sidebar { width: 260px; background: var(--white); border-right: 3px solid var(--primary-yellow); padding: 30px; position: fixed; height: 100vh; }
+        .logo { font-weight: 800; font-size: 24px; display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+        .logo-sq { width: 35px; height: 35px; background: var(--primary-yellow); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #000; }
+
+        /* Content Area */
+        main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .section-title { margin-bottom: 25px; border-left: 5px solid var(--primary-yellow); padding-left: 15px; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px; }
+        
+        /* Cards */
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; }
+        .btn { background: var(--primary-yellow); border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #eec100; }
+
+        /* System Previews */
+        .system-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .screen { border-radius: 12px; padding: 20px; height: 350px; overflow-y: auto; position: relative; }
+        .screen-label { position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: bold; background: var(--primary-yellow); padding: 2px 8px; border-radius: 4px; }
+        
+        /* Till Style */
+        .till-screen { background: #1e272e; color: #fff; }
+        .till-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #34495e; }
+        .sell-btn { background: #00b894; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+        /* Customer Style */
+        .customer-screen { background: var(--white); border: 2px solid var(--primary-yellow); }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .menu-item { background: #fff9e1; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #ffeaa7; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--gray); font-size: 12px; padding: 10px; }
+        td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <sidebar>
+        <div class="logo"><div class="logo-sq">A</div> AuraPOS</div>
+        <p style="color: var(--gray); font-size: 14px;">Cloud Sync: <strong style="color:#00b894">Connected</strong></p>
+    </sidebar>
+
+    <main>
+        <h1 class="section-title">Manager Stock Control</h1>
+        
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Add New Inventory</h3>
+                <label>Item Name</label>
+                <input type="text" id="itemName" placeholder="e.g. Silk Dress or Cheese Burger">
+                
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Price ($)</label>
+                        <input type="number" id="itemPrice" placeholder="0.00">
+                    </div>
+                    <div style="flex:1">
+                        <label>Stock Qty</label>
+                        <input type="number" id="itemQty" placeholder="10">
+                    </div>
+                </div>
+                <button class="btn" id="addBtn">Add to Cloud Database</button>
+            </div>
+
+            <div class="card" style="max-height: 380px; overflow-y: auto;">
+                <h3>Live Master Stock</h3>
+                <table id="masterTable">
+                    <thead>
+                        <tr><th>Item</th><th>Stock</th><th>Price</th></tr>
+                    </thead>
+                    <tbody id="masterBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <h1 class="section-title">Terminal Synchronizations</h1>
+        <div class="system-container">
+            <div class="screen till-screen">
+                <span class="screen-label">CASHIER TILL</span>
+                <div id="tillBody"></div>
+            </div>
+
+            <div class="screen customer-screen">
+                <span class="screen-label">CUSTOMER DISPLAY</span>
+                <div class="menu-grid" id="customerBody"></div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // YOUR FIREBASE CONFIGURATION
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT.appspot.com",
+            messagingSenderId: "YOUR_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const inventoryRef = ref(db, 'inventory');
+
+        // --- 1. Manager: Add Item to Firebase ---
+        document.getElementById('addBtn').addEventListener('click', () => {
+            const name = document.getElementById('itemName').value;
+            const price = document.getElementById('itemPrice').value;
+            const qty = document.getElementById('itemQty').value;
+
+            if (name && price && qty) {
+                push(inventoryRef, {
+                    name: name,
+                    price: parseFloat(price).toFixed(2),
+                    qty: parseInt(qty)
+                });
+                // Clear fields
+                document.getElementById('itemName').value = '';
+                document.getElementById('itemPrice').value = '';
+                document.getElementById('itemQty').value = '';
+            }
+        });
+
+        // --- 2. THE SYNC ENGINE: Listen for changes and update all screens ---
+        onValue(inventoryRef, (snapshot) => {
+            const data = snapshot.val();
+            renderScreens(data);
+        });
+
+        function renderScreens(data) {
+            const masterBody = document.getElementById('masterBody');
+            const tillBody = document.getElementById('tillBody');
+            const customerBody = document.getElementById('customerBody');
+
+            // Reset UI
+            masterBody.innerHTML = '';
+            tillBody.innerHTML = '';
+            customerBody.innerHTML = '';
+
+            if (!data) return;
+
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+
+                // Update Manager Table
+                masterBody.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td><strong>${item.qty}</strong></td>
+                        <td>$${item.price}</td>
+                    </tr>`;
+
+                // Update Till (with Sale function)
+                const tillItem = document.createElement('div');
+                tillItem.className = 'till-item';
+                tillItem.innerHTML = `
+                    <span>${item.name} (x${item.qty})</span>
+                    <button class="sell-btn" ${item.qty <= 0 ? 'disabled' : ''}>SELL</button>
+                `;
+                tillItem.querySelector('.sell-btn').onclick = () => sellItem(key, item.qty);
+                tillBody.appendChild(tillItem);
+
+                // Update Customer Screen
+                customerBody.innerHTML += `
+                    <div class="menu-item">
+                        <div style="font-weight:bold">${item.name}</div>
+                        <div style="color:#d4af37; font-size:18px; font-weight:800">$${item.price}</div>
+                        <div style="font-size:10px; color:#666">${item.qty > 0 ? 'IN STOCK' : 'OUT OF STOCK'}</div>
+                    </div>`;
+            });
+        }
+
+        // --- 3. Till Function: Reduce stock on sale ---
+        function sellItem(key, currentQty) {
+            if (currentQty > 0) {
+                const itemRef = ref(db, `inventory/${key}`);
+                update(itemRef, { qty: currentQty - 1 });
+            }
+        }
+    </script>
+</body>
+</html>

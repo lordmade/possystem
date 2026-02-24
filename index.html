@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraPOS | South Africa Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400 ;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         :root {
             --primary-grad: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
@@ -342,55 +341,20 @@
         .stock-low { background: #FFF3CD; color: #856404; animation: pulse 2s infinite; }
         .stock-out { background: #FFE5E5; color: #D63031; animation: shake 0.5s ease-in-out; }
         .btn-edit, .btn-delete {
-            padding: 10px;
-            border-radius: 50%;
-            font-size: 16px;
-            width: 40px;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            padding: clamp(6px, 1vw, 8px) clamp(12px, 2vw, 18px);
+            border-radius: 50px;
+            font-size: clamp(11px, 1.2vw, 12px);
+            font-weight: 700;
             cursor: pointer;
             transition: var(--transition);
             margin-right: 6px;
             border: none;
-        }
-        .btn-edit {
-            background: #0984E3;
-            color: white;
-        }
-        .btn-edit:hover {
-            background: #0770c2;
-            transform: scale(1.05);
-        }
-        .btn-delete {
-            background: #D63031;
-            color: white;
-        }
-        .btn-delete:hover {
-            background: #b52b2b;
-            transform: scale(1.05);
-        }
-        /* Filter Container */
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .filter-container label {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--muted-text);
             white-space: nowrap;
         }
-        .filter-container input[type="date"] {
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1.5px solid #F1F3F5;
-            background: #F8F9FA;
-            font-size: 14px;
-        }
+        .btn-edit { background: #0984E3; color: white; }
+        .btn-edit:hover { background: #0770c2; transform: scale(1.05); }
+        .btn-delete { background: #D63031; color: white; }
+        .btn-delete:hover { background: #b52b2b; transform: scale(1.05); }
         /* Analytics Section */
         .analytics-grid {
             display: grid;
@@ -735,10 +699,9 @@
             }
            
             .btn-edit, .btn-delete {
-                padding: 8px;
-                font-size: 15px;
-                width: 36px;
-                height: 36px;
+                padding: 6px 12px;
+                font-size: 11px;
+                margin-right: 3px;
             }
            
             tr.item-row td {
@@ -821,14 +784,6 @@
                 <div class="table-header">
                     <h3>Live Sales Ticker</h3>
                     <span style="background:#E3FCEF;color:#00B894;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:700;">● Real-time</span>
-                </div>
-                <div class="filter-container" style="margin-top:15px;margin-bottom:15px;">
-                    <label>From:</label>
-                    <input type="date" id="tickerFromDate">
-                    <label>To:</label>
-                    <input type="date" id="tickerToDate">
-                    <button class="btn-pill" id="applyTickerFilter" style="width:auto;padding:10px 22px;font-size:13px;">Apply</button>
-                    <button class="btn-pill" id="clearTickerFilter" style="background:#e9ecef;color:#333;width:auto;padding:10px 22px;font-size:13px;">Clear</button>
                 </div>
                 <div id="liveTicker" class="live-ticker"></div>
             </div>
@@ -916,17 +871,7 @@
         <!-- SALES HISTORY - REAL DATA -->
         <div id="view-sales" class="view">
             <div class="card">
-                <div class="table-header">
-                    <h3>Sales History Log</h3>
-                    <div class="filter-container" style="margin-left:auto;">
-                        <label>From:</label>
-                        <input type="date" id="salesFromDate">
-                        <label>To:</label>
-                        <input type="date" id="salesToDate">
-                        <button class="btn-pill" id="applySalesFilter" style="width:auto;padding:10px 22px;font-size:13px;">Apply</button>
-                        <button class="btn-pill" id="clearSalesFilter" style="background:#e9ecef;color:#333;width:auto;padding:10px 22px;font-size:13px;">Clear</button>
-                    </div>
-                </div>
+                <h3>Sales History Log</h3>
                 <div class="table-container">
                     <table>
                         <thead>
@@ -1161,8 +1106,8 @@
                             <td><span class="stock-badge ${badgeClass}">${item.qty} units</span></td>
                             <td class="price-tag">${priceDisplay}</td>
                             <td>
-                                <button class="btn-edit" data-id="${item.key}" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="btn-delete" data-id="${item.key}" data-name="${item.name}" title="Delete"><i class="fas fa-trash"></i></button>
+                                <button class="btn-edit" data-id="${item.key}">Edit</button>
+                                <button class="btn-delete" data-id="${item.key}" data-name="${item.name}">Delete</button>
                             </td>
                         `;
                         row.querySelector('.btn-edit').onclick = () => openEditModal(item.key, item);
@@ -1178,74 +1123,32 @@
             filterTable();
         });
         // Sales History - REAL DATA
-        let allSales = [];
-        let tickerFilterFrom = null;
-        let tickerFilterTo = null;
-        let salesFilterFrom = null;
-        let salesFilterTo = null;
-
-        function updateLiveTicker() {
-            const container = document.getElementById('liveTicker');
-            container.innerHTML = '';
-            let filtered = [...allSales];
-            if (tickerFilterFrom !== null) filtered = filtered.filter(s => s.timestamp >= tickerFilterFrom);
-            if (tickerFilterTo !== null) filtered = filtered.filter(s => s.timestamp <= tickerFilterTo);
-            const latest = filtered.slice(0, 10);
-            if (latest.length === 0) {
-                const empty = document.createElement('div');
-                empty.style.padding = '30px';
-                empty.style.textAlign = 'center';
-                empty.style.color = '#999';
-                empty.innerHTML = 'No sales match the selected date range.';
-                container.appendChild(empty);
-                return;
-            }
-            latest.forEach(sale => {
-                const timeAgo = Math.floor((Date.now() - sale.timestamp) / 60000);
-                const item = document.createElement('div');
-                item.className = 'ticker-item';
-                item.innerHTML = `
-                    <div><strong>${sale.name}</strong></div>
-                    <div style="text-align:right;">
-                        <div style="font-weight:700;">R ${parseFloat(sale.revenue).toFixed(0)}</div>
-                        <div style="font-size:11px;color:var(--muted-text);">Cash • ${timeAgo} min ago</div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function renderSalesTable() {
-            const salesBody = document.getElementById('salesBody');
-            salesBody.innerHTML = '';
-            let filtered = [...allSales];
-            if (salesFilterFrom !== null) filtered = filtered.filter(s => s.timestamp >= salesFilterFrom);
-            if (salesFilterTo !== null) filtered = filtered.filter(s => s.timestamp <= salesFilterTo);
-            if (filtered.length === 0) {
-                salesBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;color:#999;">No sales in selected date range.</td></tr>`;
-                return;
-            }
-            filtered.forEach(sale => {
-                const date = new Date(sale.timestamp);
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${date.toLocaleDateString('en-ZA')}</td>
-                    <td>${date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</td>
-                    <td><strong>${sale.name}</strong></td>
-                    <td style="font-weight:700;">${parseFloat(sale.revenue).toFixed(2)}</td>
-                `;
-                salesBody.appendChild(row);
-            });
-        }
-
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
-            allSales = data ? Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
-                .sort((a, b) => b.timestamp - a.timestamp) : [];
-            renderSalesTable();
+            const salesBody = document.getElementById('salesBody');
+            salesBody.innerHTML = '';
+            if (data) {
+                const salesArray = Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
+                    .sort((a, b) => b.timestamp - a.timestamp);
+                salesArray.forEach(sale => {
+                    const date = new Date(sale.timestamp);
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${date.toLocaleDateString('en-ZA')}</td>
+                        <td>${date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</td>
+                        <td><strong>${sale.name}</strong></td>
+                        <td style="font-weight:700;">${parseFloat(sale.revenue).toFixed(2)}</td>
+                    `;
+                    salesBody.appendChild(row);
+                });
+            } else {
+                salesBody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:40px;color:#999;">No sales recorded yet.</td></tr>`;
+            }
+            // Also update manager features
+            allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales);
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
         // Edit Modal with Image Support
         let currentEditKey = null;
@@ -1457,6 +1360,7 @@
             });
         }
         // Manager KPI / Ticker / Low Stock (unchanged from previous version)
+        let allSales = [];
         let currentPeriod = 'today';
         function calculatePeriodStats(period) {
             const now = Date.now();
@@ -1507,6 +1411,24 @@
                     <div class="kpi-change">need attention</div>
                 </div>
             `;
+        }
+        function updateLiveTicker() {
+            const container = document.getElementById('liveTicker');
+            container.innerHTML = '';
+            const latest = allSales.slice(0, 10);
+            latest.forEach(sale => {
+                const timeAgo = Math.floor((Date.now() - sale.timestamp) / 60000);
+                const item = document.createElement('div');
+                item.className = 'ticker-item';
+                item.innerHTML = `
+                    <div><strong>${sale.name}</strong></div>
+                    <div style="text-align:right;">
+                        <div style="font-weight:700;">R ${parseFloat(sale.revenue).toFixed(0)}</div>
+                        <div style="font-size:11px;color:var(--muted-text);">Cash • ${timeAgo} min ago</div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
         }
         function updateLowStockPanel(snapshot) {
             const data = snapshot.val();
@@ -1587,42 +1509,12 @@
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
-            renderSalesTable();
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales);
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
         onValue(inventoryRef, (snapshot) => {
             updateLowStockPanel(snapshot);
-        });
-        // Date Filter Handlers
-        document.getElementById('applyTickerFilter').addEventListener('click', () => {
-            const fromStr = document.getElementById('tickerFromDate').value;
-            const toStr = document.getElementById('tickerToDate').value;
-            tickerFilterFrom = fromStr ? new Date(fromStr + 'T00:00:00').getTime() : null;
-            tickerFilterTo = toStr ? new Date(toStr + 'T23:59:59').getTime() : null;
-            updateLiveTicker();
-        });
-        document.getElementById('clearTickerFilter').addEventListener('click', () => {
-            document.getElementById('tickerFromDate').value = '';
-            document.getElementById('tickerToDate').value = '';
-            tickerFilterFrom = null;
-            tickerFilterTo = null;
-            updateLiveTicker();
-        });
-        document.getElementById('applySalesFilter').addEventListener('click', () => {
-            const fromStr = document.getElementById('salesFromDate').value;
-            const toStr = document.getElementById('salesToDate').value;
-            salesFilterFrom = fromStr ? new Date(fromStr + 'T00:00:00').getTime() : null;
-            salesFilterTo = toStr ? new Date(toStr + 'T23:59:59').getTime() : null;
-            renderSalesTable();
-        });
-        document.getElementById('clearSalesFilter').addEventListener('click', () => {
-            document.getElementById('salesFromDate').value = '';
-            document.getElementById('salesToDate').value = '';
-            salesFilterFrom = null;
-            salesFilterTo = null;
-            renderSalesTable();
         });
         // Initialize
         window.addEventListener('load', () => {

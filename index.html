@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraPOS | South Africa Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400 ;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js "></script>
     <style>
         :root {
             --primary-grad: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
@@ -139,15 +139,15 @@
             gap: 20px;
             animation: slideInDown 0.5s ease;
         }
-       
+      
         .greeting { flex: 1; min-width: 250px; }
         .greeting h1 {
             font-size: clamp(24px, 3vw, 32px);
             font-weight: 800;
         }
-       
+      
         .header-flex > div:last-child { text-align: right; min-width: 150px; }
-       
+      
         .status-pill {
             background: #E3FCEF;
             color: #00B894;
@@ -281,7 +281,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
         }
-       
+      
         tr.category-row td {
             padding: 10px clamp(10px, 2vw, 20px);
             font-weight: 800;
@@ -291,7 +291,7 @@
             text-transform: uppercase;
             animation: fadeIn 0.3s ease;
         }
-       
+      
         tr.item-row {
             background: var(--white);
             transition: var(--transition);
@@ -326,7 +326,7 @@
             text-decoration: line-through;
             color: var(--muted-text);
         }
-       
+      
         .stock-badge {
             padding: 6px 12px;
             border-radius: 10px;
@@ -676,16 +676,16 @@
                 align-items: center;
                 gap: 15px;
             }
-           
+          
             sidebar > div:first-of-type {
                 margin-bottom: 0;
                 flex: 1;
             }
-           
+          
             sidebar > p {
                 display: none;
             }
-           
+          
             sidebar > div:nth-of-type(2) {
                 display: flex;
                 flex-direction: row;
@@ -693,34 +693,34 @@
                 flex-wrap: wrap;
                 width: 100%;
             }
-           
+          
             .nav-item {
                 margin-bottom: 0;
                 padding: 10px 15px;
                 font-size: 14px;
             }
-           
+          
             .status-pill {
                 margin-top: 0;
                 width: auto;
             }
-           
+          
             main {
                 margin-left: 0;
                 width: 100%;
                 padding: 20px;
             }
-           
+          
             .header-flex {
                 flex-direction: column;
                 align-items: flex-start;
             }
-           
+          
             .header-flex > div:last-child {
                 text-align: left;
                 width: 100%;
             }
-           
+          
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
@@ -733,22 +733,22 @@
             .logo-text {
                 font-size: 20px;
             }
-           
+          
             .btn-edit, .btn-delete {
                 padding: 6px 12px;
                 font-size: 11px;
                 margin-right: 3px;
             }
-           
+          
             tr.item-row td {
                 padding: 12px 8px;
             }
-           
+          
             .period-toggle {
                 width: 100%;
                 justify-content: center;
             }
-           
+          
             .period-btn {
                 padding: 8px 15px;
                 font-size: 12px;
@@ -774,7 +774,6 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-
         /* ADDED BY REQUEST: Sales History Log as Animated Cards with Order Number */
         .sales-cards-grid {
             display: grid;
@@ -897,7 +896,6 @@
             display: flex;
             justify-content: space-between;
         }
-
         /* Advanced Sales Analytics Section */
         .advanced-analytics {
             background: #fff;
@@ -927,7 +925,6 @@
             color: #6C757D;
             margin-top: 6px;
         }
-
         /* ADDED BY REQUEST: Card Filtering Options */
         .sales-filter-bar {
             display: flex;
@@ -971,6 +968,7 @@
             <div class="nav-item active" data-target="view-dashboard">Dashboard</div>
             <div class="nav-item" data-target="view-sales">Sales History</div>
             <div class="nav-item" data-target="view-settings">Settings</div>
+            <div class="nav-item" data-target="view-employees">Employees</div>
         </div>
         <div class="status-pill">● System Online</div>
     </sidebar>
@@ -1010,8 +1008,8 @@
                     <div class="date-filter-container">
                         <button class="date-filter-btn" id="tickerDateFilterBtn">
                             <span id="tickerDateDisplay">20/02/2026</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                            <svg xmlns="http://www.w3.org/2000/svg " fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                             </svg>
                         </button>
                         <input type="date" id="tickerDateInput" class="date-filter-input">
@@ -1108,8 +1106,8 @@
                     <div class="date-filter-container">
                         <button class="date-filter-btn" id="salesDateFilterBtn">
                             <span id="salesDateDisplay">20/02/2026</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                            <svg xmlns="http://www.w3.org/2000/svg " fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                             </svg>
                         </button>
                         <input type="date" id="salesDateInput" class="date-filter-input">
@@ -1172,6 +1170,43 @@
                 <button class="btn-pill" id="saveSettingsBtn" style="margin-top:20px;">Save Configuration</button>
             </div>
         </div>
+        <div id="view-employees" class="view">
+            <div class="card">
+                <h3>Register New Employee</h3>
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" id="empName" placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="empEmail" placeholder="john@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Position</label>
+                    <input type="text" id="empPosition" placeholder="Cashier">
+                </div>
+                <div class="input-group">
+                    <label>Shift Schedule</label>
+                    <input type="text" id="empShift" placeholder="e.g. Mon-Fri 9AM-5PM">
+                </div>
+                <button class="btn-pill" id="addEmpBtn">Register Employee</button>
+                <h3 style="margin-top: 30px;">Employee List</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Position</th>
+                            <th>Shift</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
     <!-- EDIT MODAL -->
     <div id="editModal">
@@ -1215,28 +1250,35 @@
             </div>
         </div>
     </div>
+    <div id="editEmpModal">
+        <div class="modal-content">
+            <h3>Edit Employee</h3>
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="editEmpName">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="editEmpEmail">
+            </div>
+            <div class="input-group">
+                <label>Position</label>
+                <input type="text" id="editEmpPosition">
+            </div>
+            <div class="input-group">
+                <label>Shift Schedule</label>
+                <input type="text" id="editEmpShift" placeholder="e.g. Mon-Fri 9AM-5PM">
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap: wrap;">
+                <button class="btn-pill" id="saveEditEmpBtn" style="flex:1; min-width: 120px;">Save Changes</button>
+                <button class="btn-pill" id="cancelEditEmpBtn" style="flex:1; min-width: 120px; background:#e9ecef;color:#333;">Cancel</button>
+            </div>
+        </div>
+    </div>
     <div id="toast">Stock Alert Notification</div>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        
-        // Firebase Config with all data from original code
-        const firebaseConfig = {
-            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
-            authDomain: "pinotp-d7ef5.firebaseapp.com",
-            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com",
-            projectId: "pinotp-d7ef5",
-            storageBucket: "pinotp-d7ef5.firebasestorage.app",
-            messagingSenderId: "708458917827",
-            appId: "1:708458917827:web:375de278577df0adcf9776"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const inventoryRef = ref(db, 'inventory');
-        const salesRef = ref(db, 'sales');
-        const settingsRef = ref(db, 'settings');
-        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js ";
+        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js ";
         // 0. Tab Switching Logic (unchanged)
         const navItems = document.querySelectorAll('.nav-item');
         const views = document.querySelectorAll('.view');
@@ -1245,13 +1287,14 @@
         const pageHeaders = {
             'view-dashboard': { title: 'Store Operations', subtitle: 'Manage your inventory and sales in South Africa.' },
             'view-sales': { title: 'Sales History', subtitle: 'Review your past transactions and revenue logs.' },
-            'view-settings': { title: 'Settings', subtitle: 'Manage your store configurations and preferences.' }
+            'view-settings': { title: 'Settings', subtitle: 'Manage your store configurations and preferences.' },
+            'view-employees': { title: 'Employees', subtitle: 'Register and manage employees.' }
         };
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-               
+              
                 const targetId = item.getAttribute('data-target');
                 views.forEach(view => view.classList.remove('active'));
                 document.getElementById(targetId).classList.add('active');
@@ -1259,35 +1302,45 @@
                 pageSubtitle.innerText = pageHeaders[targetId].subtitle;
             });
         });
-
+        // Firebase Config (unchanged)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
+            authDomain: "pinotp-d7ef5.firebaseapp.com",
+            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com ",
+            projectId: "pinotp-d7ef5",
+            storageBucket: "pinotp-d7ef5.firebasestorage.app",
+            messagingSenderId: "708458917827",
+            appId: "1:708458917827:web:375de278577df0adcf9776"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const inventoryRef = ref(db, 'inventory');
+        const salesRef = ref(db, 'sales');
+        const settingsRef = ref(db, 'settings');
+        const employeesRef = ref(db, 'employees');
         // Chart Instances (unchanged)
         let stockChart, topChart, timeChart;
-
         // Clock (unchanged)
         setInterval(() => {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString('en-ZA');
         }, 1000);
-
-        // ==================== CLOUDINARY CONFIG ====================
-        const CLOUD_NAME = "dv5bsbydu";
-        const UPLOAD_PRESET = "admin_tlaka";
-
+        // ==================== CLOUDINARY CONFIG - REPLACE WITH YOURS ====================
+        const CLOUD_NAME = "dv5bsbydu"; // ← CHANGE THIS
+        const UPLOAD_PRESET = "admin_tlaka"; // ← CHANGE THIS (create unsigned preset in Cloudinary dashboard)
         async function uploadToCloudinary(file) {
             if (!file) return null;
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", UPLOAD_PRESET);
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/ ${CLOUD_NAME}/image/upload`, {
                 method: "POST",
                 body: formData
             });
             const data = await response.json();
             return data.secure_url;
         }
-
         // ================================================================================
-
         // Add Item (enhanced with image)
         document.getElementById('addBtn').addEventListener('click', async () => {
             const name = document.getElementById('itemName').value.trim();
@@ -1319,7 +1372,6 @@
                 showToast(`Added ${name} to inventory!`);
             });
         });
-
         // Inventory Sync (enhanced with image + edit/delete buttons, removed sell button)
         onValue(inventoryRef, (snapshot) => {
             const data = snapshot.val();
@@ -1339,10 +1391,10 @@
                     stockLabels.push(item.name);
                     const finalPrice = item.price - (item.price * (item.discount || 0) / 100);
                     stockValues.push(item.qty * finalPrice);
-                   
+                  
                     // For top selling chart
                     topSellingLabels.push(item.name);
-                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0);
+                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0); // Higher sales = lower stock
                 });
                 Object.keys(groupedItems).forEach(cat => {
                     const catRow = document.createElement('tr');
@@ -1357,7 +1409,7 @@
                         const finalPrice = hasDiscount
                             ? (item.price - (item.price * item.discount / 100)).toFixed(2)
                             : parseFloat(item.price).toFixed(2);
-                       
+                      
                         const priceDisplay = hasDiscount
                             ? `<span class="discount-text">R ${item.price} (-${item.discount}%)</span><span>R ${finalPrice}</span>`
                             : `<span>R ${finalPrice}</span>`;
@@ -1388,7 +1440,6 @@
             updateTopChart(topSellingLabels, topSellingData);
             filterTable();
         });
-
         // Date Filter Logic
         let tickerFilterDate = new Date();
         let salesFilterDate = new Date();
@@ -1407,7 +1458,6 @@
                    date1.getMonth() === date2.getMonth() &&
                    date1.getFullYear() === date2.getFullYear();
         }
-
         // Ticker Date Filter
         const tickerDateInput = document.getElementById('tickerDateInput');
         const tickerDateDisplay = document.getElementById('tickerDateDisplay');
@@ -1424,7 +1474,6 @@
                 updateLiveTicker();
             }
         });
-
         // Sales History Date Filter
         const salesDateInput = document.getElementById('salesDateInput');
         const salesDateDisplay = document.getElementById('salesDateDisplay');
@@ -1441,39 +1490,36 @@
                 updateSalesHistory();
             }
         });
-
         // Sales History - REAL DATA with Date Filter
         function updateSalesHistory() {
             // Table removed - sales shown as cards only
         }
-
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSalesData = data ? Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
                 .sort((a, b) => b.timestamp - a.timestamp) : [];
-           
+          
             updateSalesHistory();
-           
+          
             // Also update manager features
             allSales = allSalesData;
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales);
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
-
         // Edit Modal with Image Support
         let currentEditKey = null;
         let currentImageURL = null;
-       
+      
         function openEditModal(key, item) {
             currentEditKey = key;
             currentImageURL = item.imageURL;
-           
+          
             document.getElementById('editName').value = item.name;
             document.getElementById('editPrice').value = item.price;
             document.getElementById('editDiscount').value = item.discount || 0;
             document.getElementById('editQty').value = item.qty;
-           
+          
             // Show current image if exists
             const imgPreview = document.getElementById('editImagePreview');
             if (item.imageURL) {
@@ -1482,20 +1528,19 @@
             } else {
                 imgPreview.style.display = 'none';
             }
-           
+          
             document.getElementById('editModal').style.display = 'flex';
         }
-
         document.getElementById('saveEditBtn').addEventListener('click', async () => {
             if (!currentEditKey) return;
-           
+          
             const file = document.getElementById('editImage').files[0];
             let newImageURL = currentImageURL;
-           
+          
             if (file) {
                 newImageURL = await uploadToCloudinary(file);
             }
-           
+          
             const updates = {
                 name: document.getElementById('editName').value,
                 price: parseFloat(document.getElementById('editPrice').value).toFixed(2),
@@ -1503,46 +1548,46 @@
                 qty: parseInt(document.getElementById('editQty').value),
                 imageURL: newImageURL
             };
-           
+          
             update(ref(db, `inventory/${currentEditKey}`), updates).then(() => {
                 document.getElementById('editModal').style.display = 'none';
                 document.getElementById('editImage').value = '';
                 showToast('Product updated successfully');
             });
         });
-
         document.getElementById('cancelEditBtn').addEventListener('click', () => {
             document.getElementById('editModal').style.display = 'none';
             document.getElementById('editImage').value = '';
         });
-
         // Delete Confirmation Modal
         let itemToDeleteKey = null;
         let itemToDeleteName = null;
-        function openDeleteModal(key, name) {
+        let deleteType = 'product';
+        function openDeleteModal(key, name, type = 'product') {
+            deleteType = type;
             itemToDeleteKey = key;
             itemToDeleteName = name;
             document.getElementById('deleteItemName').textContent = name;
             document.getElementById('deleteModal').style.display = 'flex';
         }
-
         document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
             document.getElementById('deleteModal').style.display = 'none';
             itemToDeleteKey = null;
             itemToDeleteName = null;
+            deleteType = 'product';
         });
-
         document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
             if (itemToDeleteKey) {
-                remove(ref(db, `inventory/${itemToDeleteKey}`)).then(() => {
+                const path = deleteType === 'employee' ? `employees/${itemToDeleteKey}` : `inventory/${itemToDeleteKey}`;
+                remove(ref(db, path)).then(() => {
                     showToast(`${itemToDeleteName} deleted`);
                     document.getElementById('deleteModal').style.display = 'none';
                     itemToDeleteKey = null;
                     itemToDeleteName = null;
+                    deleteType = 'product';
                 });
             }
         });
-
         // Search (unchanged)
         document.getElementById('searchInput').addEventListener('input', filterTable);
         function filterTable() {
@@ -1553,7 +1598,6 @@
                 row.style.display = name.includes(query) ? '' : 'none';
             });
         }
-
         // Toast (unchanged)
         function showToast(message) {
             const toast = document.getElementById("toast");
@@ -1561,11 +1605,9 @@
             toast.className = "show";
             setTimeout(() => { toast.className = ""; }, 3000);
         }
-
         // Charts (updated with top selling chart and sales over time)
         Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
         const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-
         function updateStockChart(labels, data) {
             const ctx = document.getElementById('stockValueChart').getContext('2d');
             if (stockChart) stockChart.destroy();
@@ -1575,7 +1617,6 @@
                 options: chartOptions
             });
         }
-
         function updateTopChart(labels, data) {
             const ctx = document.getElementById('topSellingChart').getContext('2d');
             if (topChart) topChart.destroy();
@@ -1606,38 +1647,37 @@
                 }
             });
         }
-
         // NEW: Sales Over Time Chart Function
         function updateTimeChartFromSales(salesData) {
             const ctx = document.getElementById('salesTimeChart').getContext('2d');
-           
+          
             // Group sales by date
             const salesByDate = {};
-           
+          
             if (salesData && salesData.length > 0) {
                 salesData.forEach(sale => {
                     const date = new Date(sale.timestamp);
                     const dateKey = date.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
-                   
+                  
                     if (!salesByDate[dateKey]) {
                         salesByDate[dateKey] = 0;
                     }
                     salesByDate[dateKey] += parseFloat(sale.revenue || 0);
                 });
             }
-           
+          
             // Sort dates chronologically
             const sortedDates = Object.keys(salesByDate).sort((a, b) => {
                 const dateA = new Date(a + ' 2024');
                 const dateB = new Date(b + ' 2024');
                 return dateA - dateB;
             });
-           
+          
             const labels = sortedDates.length > 0 ? sortedDates : ['No Data'];
             const data = sortedDates.length > 0 ? sortedDates.map(date => salesByDate[date]) : [0];
-           
+          
             if (timeChart) timeChart.destroy();
-           
+          
             timeChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1681,8 +1721,7 @@
                 }
             });
         }
-
-        // Manager KPI / Ticker / Low Stock
+        // Manager KPI / Ticker / Low Stock (unchanged from previous version)
         let allSales = [];
         let currentPeriod = 'today';
         function calculatePeriodStats(period) {
@@ -1701,7 +1740,6 @@
             const avg = count > 0 ? (revenue / count).toFixed(0) : 0;
             return { revenue: revenue.toFixed(0), count, avg };
         }
-
         function updateKPICards() {
             const stats = calculatePeriodStats(currentPeriod);
             const yesterdayStats = { revenue: 10500 };
@@ -1736,16 +1774,15 @@
                 </div>
             `;
         }
-
         function updateLiveTicker() {
             const container = document.getElementById('liveTicker');
             container.innerHTML = '';
-           
+          
             const filteredSales = allSales.filter(sale => {
                 const saleDate = new Date(sale.timestamp);
                 return isSameDay(saleDate, tickerFilterDate);
             });
-           
+          
             const latest = filteredSales.slice(0, 10);
             latest.forEach(sale => {
                 const timeAgo = Math.floor((Date.now() - sale.timestamp) / 60000);
@@ -1760,12 +1797,11 @@
                 `;
                 container.appendChild(item);
             });
-           
+          
             if (latest.length === 0) {
                 container.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">No sales for ${formatDateToDisplay(tickerFilterDate)}</div>`;
             }
         }
-
         function updateLowStockPanel(snapshot) {
             const data = snapshot.val();
             if (!data) return;
@@ -1782,7 +1818,6 @@
             const kpiEl = document.getElementById('kpiLowStock');
             if (kpiEl) kpiEl.textContent = lowItems.length;
         }
-
         // Period toggle
         document.querySelectorAll('.period-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1792,7 +1827,6 @@
                 updateKPICards();
             });
         });
-
         // End of Day PDF with Tables and Charts
         document.getElementById('endOfDayBtn').addEventListener('click', async () => {
             const todaySales = allSales.filter(s => {
@@ -1800,26 +1834,26 @@
                 const today = new Date();
                 return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
             });
-           
+          
             const total = todaySales.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
             const today = new Date();
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-           
+          
             // Header
             doc.setFont("helvetica", "bold");
             doc.setFontSize(20);
-            doc.setTextColor(255, 215, 0);
+            doc.setTextColor(255, 215, 0); // Gold color
             doc.text("AURA POS", 20, 20);
-           
+          
             doc.setFontSize(12);
             doc.setTextColor(0, 0, 0);
             doc.text("END OF DAY REPORT", 20, 28);
-           
+          
             // Date and Summary Box
             doc.setFillColor(247, 249, 252);
             doc.roundedRect(20, 35, 170, 30, 3, 3, 'F');
-           
+          
             doc.setFont("helvetica", "bold");
             doc.setFontSize(11);
             doc.text(`Date: ${today.toLocaleDateString('en-ZA')}`, 25, 45);
@@ -1873,7 +1907,7 @@
             for (let i = 0; i < 24; i++) {
                 salesByHour[i] = 0;
             }
-           
+          
             todaySales.forEach(sale => {
                 const hour = new Date(sale.timestamp).getHours();
                 salesByHour[hour] += parseFloat(sale.revenue || 0);
@@ -1892,7 +1926,7 @@
             Object.keys(salesByHour).forEach((hour, index) => {
                 const value = salesByHour[hour];
                 const barHeight = (value / maxValue) * (chartHeight - 10);
-               
+              
                 if (value > 0) {
                     // Gradient effect using multiple rectangles
                     const gradientSteps = 5;
@@ -1902,7 +1936,7 @@
                         const g = Math.floor(255 - (255 - 215) * ratio);
                         const b = Math.floor(255 - (255 - 0) * ratio);
                         doc.setFillColor(r, g, b);
-                       
+                      
                         const stepHeight = barHeight / gradientSteps;
                         doc.rect(
                             20 + (index * barWidth) + 1,
@@ -1957,28 +1991,28 @@
             const pieCenterY = pieY + 40;
             const pieRadius = 30;
             const colors = [
-                [255, 215, 0],
-                [0, 184, 148],
-                [9, 132, 227],
-                [108, 92, 231],
-                [255, 118, 117]
+                [255, 215, 0], // Gold
+                [0, 184, 148], // Green
+                [9, 132, 227], // Blue
+                [108, 92, 231], // Purple
+                [255, 118, 117] // Red
             ];
             if (sortedProducts.length > 0) {
                 const totalProductRevenue = sortedProducts.reduce((sum, [, data]) => sum + data.revenue, 0);
                 let currentAngle = 0;
                 sortedProducts.forEach(([name, data], index) => {
                     const sliceAngle = (data.revenue / totalProductRevenue) * 2 * Math.PI;
-                   
+                  
                     // Draw slice
                     doc.setFillColor(...colors[index % colors.length]);
                     doc.setDrawColor(255, 255, 255);
                     doc.setLineWidth(1);
-                   
+                  
                     // Create pie slice using multiple line segments
                     const steps = 20;
                     const angleStep = sliceAngle / steps;
                     let points = [{x: pieCenterX, y: pieCenterY}];
-                   
+                  
                     for (let i = 0; i <= steps; i++) {
                         const angle = currentAngle + (i * angleStep);
                         points.push({
@@ -1986,7 +2020,7 @@
                             y: pieCenterY + pieRadius * Math.sin(angle)
                         });
                     }
-                   
+                  
                     // Draw the slice
                     doc.lines(
                         points.map((p, i) => i === 0 ? [0, 0] : [p.x - points[i-1].x, p.y - points[i-1].y]),
@@ -2026,7 +2060,6 @@
             doc.save(`AuraPOS_EndOfDay_${today.toISOString().slice(0,10)}.pdf`);
             showToast('✅ End of Day PDF Downloaded with Tables & Charts');
         });
-
         // Settings
         onValue(settingsRef, (snapshot) => {
             const s = snapshot.val() || {};
@@ -2036,7 +2069,6 @@
             document.getElementById('monthlyGoal').value = s.monthlyGoal || 25000;
             document.getElementById('lowStockThreshold').value = s.lowStockThreshold || 5;
         });
-
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
             const settingsData = {
                 storeName: document.getElementById('storeName').value,
@@ -2049,27 +2081,24 @@
                 showToast('✅ Settings saved');
             });
         });
-
         // Manager realtime listeners
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales);
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
-
         onValue(inventoryRef, (snapshot) => {
             updateLowStockPanel(snapshot);
         });
-
         // Initialize
         window.addEventListener('load', () => {
             updateKPICards();
+            // Initialize empty sales chart
             updateTimeChartFromSales([]);
         });
-
-        // when stock is finished for a product it must not allow people to order
+        // ADDED BY REQUEST: when stock is finished for a product it must not allow people to order
         onValue(inventoryRef, (snapshot) => {
             setTimeout(() => {
                 const rows = document.querySelectorAll('.item-row');
@@ -2105,13 +2134,11 @@
                 });
             }, 150);
         });
-
-        // the live sales tracker time must be real time
+        // ADDED BY REQUEST: the live sales tracker time must be real time
         setInterval(() => {
             updateLiveTicker();
         }, 35000);
-
-        // Sales History Log must show the sales as animated cards with their order number
+        // ADDED BY REQUEST ONLY: Sales History Log must show the sales as animated cards with their order number
         function renderSalesCards(filteredData = null) {
             const container = document.getElementById('salesCardsContainer');
             container.innerHTML = '';
@@ -2125,7 +2152,7 @@
             }
             dataToRender.forEach((sale, index) => {
                 const date = new Date(sale.timestamp);
-                const orderNum = `#ORD-${String(10000 + index)}`;
+                const orderNum = sale.orderNumber ? `#${sale.orderNumber}` : `#ORD-${String(10000 + index)}`;
                 const pointsEarned = Math.floor(parseFloat(sale.revenue) / 10);
                 const card = document.createElement('div');
                 card.className = 'sale-order-card';
@@ -2149,35 +2176,30 @@
                 container.appendChild(card);
             });
         }
-
-        // Trigger cards on sales update and date change
+        // Trigger cards on sales update and date change (added listeners only - no original lines modified)
         const originalSalesUpdate = updateSalesHistory;
         updateSalesHistory = function() {
             originalSalesUpdate();
             renderSalesCards();
             updateAdvancedAnalytics();
         };
-
         salesDateInput.addEventListener('change', () => {
             setTimeout(() => {
                 renderSalesCards();
                 updateAdvancedAnalytics();
             }, 50);
         });
-
         onValue(salesRef, (snapshot) => {
             renderSalesCards();
             updateAdvancedAnalytics();
         });
-
         window.addEventListener('load', () => {
             setTimeout(() => {
                 renderSalesCards();
                 updateAdvancedAnalytics();
             }, 1200);
         });
-
-        // Advanced Sales Analytics
+        // ADDED BY REQUEST: Advanced Sales Analytics Section
         function updateAdvancedAnalytics() {
             const filteredSales = allSalesData.filter(sale => {
                 const saleDate = new Date(sale.timestamp);
@@ -2207,17 +2229,14 @@
                 </div>
             `;
         }
-
-        // Card Filtering Options
+        // ADDED BY REQUEST: Card Filtering Options
         function applyCardFilters() {
             const searchTerm = document.getElementById('cardSearchInput').value.toLowerCase().trim();
             const tier = document.getElementById('tierFilter').value;
             const sortMode = document.getElementById('sortFilter').value;
-
             let filtered = allSalesData.filter(sale => {
                 const saleDate = new Date(sale.timestamp);
                 if (!isSameDay(saleDate, salesFilterDate)) return false;
-
                 const matchesSearch = !searchTerm || sale.name.toLowerCase().includes(searchTerm);
                 let matchesTier = true;
                 if (tier !== 'all') {
@@ -2227,7 +2246,6 @@
                 }
                 return matchesSearch && matchesTier;
             });
-
             // Sort
             if (sortMode === 'newest') {
                 filtered.sort((a, b) => b.timestamp - a.timestamp);
@@ -2238,20 +2256,94 @@
             } else if (sortMode === 'low') {
                 filtered.sort((a, b) => parseFloat(a.revenue) - parseFloat(b.revenue));
             }
-
             renderSalesCards(filtered);
         }
-
-        // Auto-apply filters on input change
+        // Auto-apply filters on input change (real-time)
         setTimeout(() => {
             const searchInput = document.getElementById('cardSearchInput');
             const tierSelect = document.getElementById('tierFilter');
             const sortSelect = document.getElementById('sortFilter');
-
             if (searchInput) searchInput.addEventListener('input', applyCardFilters);
             if (tierSelect) tierSelect.addEventListener('change', applyCardFilters);
             if (sortSelect) sortSelect.addEventListener('change', applyCardFilters);
         }, 800);
+        // Employees registration
+        document.getElementById('addEmpBtn').addEventListener('click', () => {
+            const name = document.getElementById('empName').value.trim();
+            const email = document.getElementById('empEmail').value.trim();
+            const position = document.getElementById('empPosition').value.trim();
+            const shift = document.getElementById('empShift').value.trim();
+            if (!name || !email || !position) return;
+            const employeeId = 'EMP-' + Math.floor(100000 + Math.random() * 900000);
+            push(employeesRef, {
+                employeeId,
+                name,
+                email,
+                position,
+                shift
+            }).then(() => {
+                // Clear form
+                document.getElementById('empName').value = '';
+                document.getElementById('empEmail').value = '';
+                document.getElementById('empPosition').value = '';
+                document.getElementById('empShift').value = '';
+                showToast(`Employee registered with ID: ${employeeId}`);
+            });
+        });
+        // Employees Sync
+        onValue(employeesRef, (snapshot) => {
+            const data = snapshot.val();
+            const tableBody = document.getElementById('employeesBody');
+            tableBody.innerHTML = '';
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    const emp = data[key];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${emp.employeeId}</td>
+                        <td>${emp.name}</td>
+                        <td>${emp.email}</td>
+                        <td>${emp.position}</td>
+                        <td>${emp.shift || 'Not set'}</td>
+                        <td>
+                            <button class="btn-edit" data-id="${key}">Edit</button>
+                            <button class="btn-delete" data-id="${key}" data-name="${emp.name}">Delete</button>
+                        </td>
+                    `;
+                    row.querySelector('.btn-edit').onclick = () => openEditEmpModal(key, emp);
+                    row.querySelector('.btn-delete').onclick = () => openDeleteModal(key, emp.name, 'employee');
+                    tableBody.appendChild(row);
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999; padding:40px;">No employees found. Register your first employee.</td></tr>';
+            }
+        });
+        // Edit Employee Modal
+        let currentEditEmpKey = null;
+        function openEditEmpModal(key, item) {
+            currentEditEmpKey = key;
+            document.getElementById('editEmpName').value = item.name;
+            document.getElementById('editEmpEmail').value = item.email;
+            document.getElementById('editEmpPosition').value = item.position;
+            document.getElementById('editEmpShift').value = item.shift || '';
+            document.getElementById('editEmpModal').style.display = 'flex';
+        }
+        document.getElementById('saveEditEmpBtn').addEventListener('click', () => {
+            if (!currentEditEmpKey) return;
+            const updates = {
+                name: document.getElementById('editEmpName').value,
+                email: document.getElementById('editEmpEmail').value,
+                position: document.getElementById('editEmpPosition').value,
+                shift: document.getElementById('editEmpShift').value
+            };
+            update(ref(db, `employees/${currentEditEmpKey}`), updates).then(() => {
+                document.getElementById('editEmpModal').style.display = 'none';
+                showToast('Employee updated successfully');
+            });
+        });
+        document.getElementById('cancelEditEmpBtn').addEventListener('click', () => {
+            document.getElementById('editEmpModal').style.display = 'none';
+        });
     </script>
 </body>
 </html>

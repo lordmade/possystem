@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraPOS | South Africa Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400 ;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js "></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js "></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             --primary-grad: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
@@ -623,7 +623,7 @@
             margin-bottom: 15px;
             border: 2px dashed #ddd;
         }
-        /* Date Filter Styles */
+        /* Date Filter Styles - Matching the image */
         .date-filter-container {
             display: flex;
             align-items: center;
@@ -659,77 +659,6 @@
             opacity: 0;
             pointer-events: none;
         }
-        /* Employee Table */
-        .employee-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-            margin-top: 20px;
-        }
-        .employee-table thead th {
-            text-align: left;
-            padding: 0 20px;
-            color: var(--muted-text);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-        .employee-table tbody tr {
-            background: var(--white);
-            border-top: 1px solid #F1F3F5;
-            border-bottom: 1px solid #F1F3F5;
-            animation: slideInRight 0.4s ease;
-        }
-        .employee-table tbody tr td {
-            padding: 18px 20px;
-            font-size: 14px;
-            border-top: 1px solid #F1F3F5;
-            border-bottom: 1px solid #F1F3F5;
-        }
-        .employee-table tbody tr td:first-child {
-            border-left: 1px solid #F1F3F5;
-            border-top-left-radius: 16px;
-            border-bottom-left-radius: 16px;
-        }
-        .employee-table tbody tr td:last-child {
-            border-right: 1px solid #F1F3F5;
-            border-top-right-radius: 16px;
-            border-bottom-right-radius: 16px;
-        }
-        .employee-id-badge {
-            background: var(--primary-grad);
-            color: #000;
-            padding: 6px 12px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 13px;
-            display: inline-block;
-        }
-        .status-active {
-            background: #E3FCEF;
-            color: #00B894;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 12px;
-            display: inline-block;
-        }
-        .btn-employee-delete {
-            background: #D63031;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 12px;
-        }
-        .btn-employee-delete:hover {
-            background: #b52b2b;
-            transform: scale(1.05);
-        }
         /* Responsive Breakpoints */
         @media (max-width: 1024px) {
             .dashboard-grid {
@@ -747,13 +676,16 @@
                 align-items: center;
                 gap: 15px;
             }
+           
             sidebar > div:first-of-type {
                 margin-bottom: 0;
                 flex: 1;
             }
+           
             sidebar > p {
                 display: none;
             }
+           
             sidebar > div:nth-of-type(2) {
                 display: flex;
                 flex-direction: row;
@@ -761,28 +693,34 @@
                 flex-wrap: wrap;
                 width: 100%;
             }
+           
             .nav-item {
                 margin-bottom: 0;
                 padding: 10px 15px;
                 font-size: 14px;
             }
+           
             .status-pill {
                 margin-top: 0;
                 width: auto;
             }
+           
             main {
                 margin-left: 0;
                 width: 100%;
                 padding: 20px;
             }
+           
             .header-flex {
                 flex-direction: column;
                 align-items: flex-start;
             }
+           
             .header-flex > div:last-child {
                 text-align: left;
                 width: 100%;
             }
+           
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
@@ -795,18 +733,22 @@
             .logo-text {
                 font-size: 20px;
             }
+           
             .btn-edit, .btn-delete {
                 padding: 6px 12px;
                 font-size: 11px;
                 margin-right: 3px;
             }
+           
             tr.item-row td {
                 padding: 12px 8px;
             }
+           
             .period-toggle {
                 width: 100%;
                 justify-content: center;
             }
+           
             .period-btn {
                 padding: 8px 15px;
                 font-size: 12px;
@@ -833,7 +775,7 @@
             background: #a8a8a8;
         }
 
-        /* Sales History Log as Animated Cards with Order Number */
+        /* ADDED BY REQUEST: Sales History Log as Animated Cards with Order Number */
         .sales-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -986,7 +928,7 @@
             margin-top: 6px;
         }
 
-        /* Card Filtering Options */
+        /* ADDED BY REQUEST: Card Filtering Options */
         .sales-filter-bar {
             display: flex;
             gap: 12px;
@@ -1028,7 +970,6 @@
         <div style="flex-grow: 1;">
             <div class="nav-item active" data-target="view-dashboard">Dashboard</div>
             <div class="nav-item" data-target="view-sales">Sales History</div>
-            <div class="nav-item" data-target="view-employees">Employees</div>
             <div class="nav-item" data-target="view-settings">Settings</div>
         </div>
         <div class="status-pill">● System Online</div>
@@ -1069,7 +1010,7 @@
                     <div class="date-filter-container">
                         <button class="date-filter-btn" id="tickerDateFilterBtn">
                             <span id="tickerDateDisplay">20/02/2026</span>
-                            <svg xmlns="http://www.w3.org/2000/svg " fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                             </svg>
                         </button>
@@ -1167,7 +1108,7 @@
                     <div class="date-filter-container">
                         <button class="date-filter-btn" id="salesDateFilterBtn">
                             <span id="salesDateDisplay">20/02/2026</span>
-                            <svg xmlns="http://www.w3.org/2000/svg " fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0121 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                             </svg>
                         </button>
@@ -1202,54 +1143,6 @@
                 <div id="salesCardsContainer" class="sales-cards-grid"></div>
             </div>
         </div>
-        <!-- EMPLOYEES MANAGEMENT -->
-        <div id="view-employees" class="view">
-            <div class="card">
-                <h3>Employee Management</h3>
-                <p style="color: var(--muted-text); margin-bottom: 25px; font-size: 14px;">Add employees to your system. Each employee receives a unique ID to access the cashier system.</p>
-                <div class="input-group">
-                    <label>Employee Name</label>
-                    <input type="text" id="empName" placeholder="e.g. John Doe">
-                </div>
-                <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="empEmail" placeholder="john@example.com">
-                </div>
-                <div class="input-group">
-                    <label>Role</label>
-                    <select id="empRole">
-                        <option value="Cashier">Cashier</option>
-                        <option value="Manager">Manager</option>
-                        <option value="Stock Officer">Stock Officer</option>
-                        <option value="Assistant">Assistant</option>
-                    </select>
-                </div>
-                <div style="background: #F8F9FA; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                    <p style="font-size: 12px; color: var(--muted-text); margin-bottom: 6px;">Auto-Generated Employee ID:</p>
-                    <p id="autoEmpId" style="font-size: 18px; font-weight: 800; color: var(--dark-text);">EMP-00001</p>
-                </div>
-                <button class="btn-pill" id="addEmpBtn">👤 Add Employee</button>
-            </div>
-            <div class="card" style="margin-top: 30px;">
-                <h3>Active Employees</h3>
-                <div class="table-container">
-                    <table class="employee-table">
-                        <thead>
-                            <tr>
-                                <th>Employee Name</th>
-                                <th>Employee ID</th>
-                                <th>Role</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employeeBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
         <!-- SETTINGS - REAL CONFIGURATIONS -->
         <div id="view-settings" class="view">
             <div class="card">
@@ -1280,7 +1173,6 @@
             </div>
         </div>
     </main>
-
     <!-- EDIT MODAL -->
     <div id="editModal">
         <div class="modal-content">
@@ -1325,8 +1217,26 @@
     </div>
     <div id="toast">Stock Alert Notification</div>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js ";
-        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js ";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        
+        // Firebase Config with all data from original code
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
+            authDomain: "pinotp-d7ef5.firebaseapp.com",
+            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com",
+            projectId: "pinotp-d7ef5",
+            storageBucket: "pinotp-d7ef5.firebasestorage.app",
+            messagingSenderId: "708458917827",
+            appId: "1:708458917827:web:375de278577df0adcf9776"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const inventoryRef = ref(db, 'inventory');
+        const salesRef = ref(db, 'sales');
+        const settingsRef = ref(db, 'settings');
+        
         // 0. Tab Switching Logic (unchanged)
         const navItems = document.querySelectorAll('.nav-item');
         const views = document.querySelectorAll('.view');
@@ -1335,7 +1245,6 @@
         const pageHeaders = {
             'view-dashboard': { title: 'Store Operations', subtitle: 'Manage your inventory and sales in South Africa.' },
             'view-sales': { title: 'Sales History', subtitle: 'Review your past transactions and revenue logs.' },
-            'view-employees': { title: 'Employee Management', subtitle: 'Manage employees and their access to the cashier system.' },
             'view-settings': { title: 'Settings', subtitle: 'Manage your store configurations and preferences.' }
         };
         navItems.forEach(item => {
@@ -1350,135 +1259,35 @@
                 pageSubtitle.innerText = pageHeaders[targetId].subtitle;
             });
         });
-        // Firebase Config (unchanged)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
-            authDomain: "pinotp-d7ef5.firebaseapp.com",
-            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com ",
-            projectId: "pinotp-d7ef5",
-            storageBucket: "pinotp-d7ef5.firebasestorage.app",
-            messagingSenderId: "708458917827",
-            appId: "1:708458917827:web:375de278577df0adcf9776"
-        };
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const employeesRef = ref(db, 'employees');
-        const inventoryRef = ref(db, 'inventory');
-        const salesRef = ref(db, 'sales');
-        const settingsRef = ref(db, 'settings');
+
         // Chart Instances (unchanged)
         let stockChart, topChart, timeChart;
-        let allEmployees = [];
+
         // Clock (unchanged)
         setInterval(() => {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString('en-ZA');
         }, 1000);
-        // ==================== CLOUDINARY CONFIG - REPLACE WITH YOURS ====================
-        const CLOUD_NAME = "dv5bsbydu"; // ← CHANGE THIS
-        const UPLOAD_PRESET = "admin_tlaka"; // ← CHANGE THIS (create unsigned preset in Cloudinary dashboard)
+
+        // ==================== CLOUDINARY CONFIG ====================
+        const CLOUD_NAME = "dv5bsbydu";
+        const UPLOAD_PRESET = "admin_tlaka";
+
         async function uploadToCloudinary(file) {
             if (!file) return null;
             const formData = new FormData();
             formData.append("file", file);
             formData.append("upload_preset", UPLOAD_PRESET);
-            const response = await fetch(`https://api.cloudinary.com/v1_1/ ${CLOUD_NAME}/image/upload`, {
+            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
                 method: "POST",
                 body: formData
             });
             const data = await response.json();
             return data.secure_url;
         }
+
         // ================================================================================
-        // ============================= EMPLOYEE MANAGEMENT =============================
-        // Auto-generate Employee ID
-        function generateEmployeeId() {
-            const newId = 'EMP-' + String(allEmployees.length + 1).padStart(5, '0');
-            return newId;
-        }
-        
-        function updateAutoEmpId() {
-            document.getElementById('autoEmpId').textContent = generateEmployeeId();
-        }
-        
-        // Load employees data
-        onValue(employeesRef, (snapshot) => {
-            const data = snapshot.val();
-            allEmployees = data ? Object.entries(data).map(([id, emp]) => ({ id, ...emp })) : [];
-            updateAutoEmpId();
-        });
-        
-        document.getElementById('empName').addEventListener('input', updateAutoEmpId);
-        document.getElementById('empRole').addEventListener('change', updateAutoEmpId);
-        
-        // Add Employee
-        document.getElementById('addEmpBtn').addEventListener('click', () => {
-            const name = document.getElementById('empName').value.trim();
-            const email = document.getElementById('empEmail').value.trim();
-            const role = document.getElementById('empRole').value;
-            
-            if (!name || !email) {
-                showToast('❌ Please fill in all fields');
-                return;
-            }
-            
-            const empId = generateEmployeeId();
-            
-            push(employeesRef, {
-                name: name,
-                email: email,
-                role: role,
-                empId: empId,
-                createdAt: Date.now(),
-                status: 'active'
-            }).then(() => {
-                document.getElementById('empName').value = '';
-                document.getElementById('empEmail').value = '';
-                document.getElementById('empRole').value = 'Cashier';
-                updateAutoEmpId();
-                showToast(`✅ Employee ${name} added with ID: ${empId}`);
-            });
-        });
-        
-        // Display Employees
-        onValue(employeesRef, (snapshot) => {
-            const data = snapshot.val();
-            const empBody = document.getElementById('employeeBody');
-            empBody.innerHTML = '';
-            
-            if (data) {
-                Object.entries(data).forEach(([key, emp]) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${emp.name}</strong></td>
-                        <td><span class="employee-id-badge">${emp.empId}</span></td>
-                        <td>${emp.role}</td>
-                        <td style="font-size:13px;">${emp.email}</td>
-                        <td><span class="status-active">✓ ${emp.status}</span></td>
-                        <td>
-                            <button class="btn-employee-delete" data-key="${key}" data-name="${emp.name}">Delete</button>
-                        </td>
-                    `;
-                    empBody.appendChild(row);
-                });
-                
-                // Add delete handlers
-                document.querySelectorAll('.btn-employee-delete').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const key = btn.getAttribute('data-key');
-                        const name = btn.getAttribute('data-name');
-                        if (confirm(`Delete employee ${name}?`)) {
-                            remove(ref(db, `employees/${key}`)).then(() => {
-                                showToast(`✅ ${name} removed from system`);
-                            });
-                        }
-                    });
-                });
-            } else {
-                empBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999; padding:40px;">No employees added yet.</td></tr>';
-            }
-        });
-        // ================================================================================
+
         // Add Item (enhanced with image)
         document.getElementById('addBtn').addEventListener('click', async () => {
             const name = document.getElementById('itemName').value.trim();
@@ -1510,6 +1319,7 @@
                 showToast(`Added ${name} to inventory!`);
             });
         });
+
         // Inventory Sync (enhanced with image + edit/delete buttons, removed sell button)
         onValue(inventoryRef, (snapshot) => {
             const data = snapshot.val();
@@ -1532,7 +1342,7 @@
                    
                     // For top selling chart
                     topSellingLabels.push(item.name);
-                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0); // Higher sales = lower stock
+                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0);
                 });
                 Object.keys(groupedItems).forEach(cat => {
                     const catRow = document.createElement('tr');
@@ -1578,6 +1388,7 @@
             updateTopChart(topSellingLabels, topSellingData);
             filterTable();
         });
+
         // Date Filter Logic
         let tickerFilterDate = new Date();
         let salesFilterDate = new Date();
@@ -1596,6 +1407,7 @@
                    date1.getMonth() === date2.getMonth() &&
                    date1.getFullYear() === date2.getFullYear();
         }
+
         // Ticker Date Filter
         const tickerDateInput = document.getElementById('tickerDateInput');
         const tickerDateDisplay = document.getElementById('tickerDateDisplay');
@@ -1612,6 +1424,7 @@
                 updateLiveTicker();
             }
         });
+
         // Sales History Date Filter
         const salesDateInput = document.getElementById('salesDateInput');
         const salesDateDisplay = document.getElementById('salesDateDisplay');
@@ -1628,10 +1441,12 @@
                 updateSalesHistory();
             }
         });
+
         // Sales History - REAL DATA with Date Filter
         function updateSalesHistory() {
             // Table removed - sales shown as cards only
         }
+
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSalesData = data ? Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
@@ -1643,8 +1458,9 @@
             allSales = allSalesData;
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales); // Update sales over time chart
+            updateTimeChartFromSales(allSales);
         });
+
         // Edit Modal with Image Support
         let currentEditKey = null;
         let currentImageURL = null;
@@ -1669,6 +1485,7 @@
            
             document.getElementById('editModal').style.display = 'flex';
         }
+
         document.getElementById('saveEditBtn').addEventListener('click', async () => {
             if (!currentEditKey) return;
            
@@ -1693,10 +1510,12 @@
                 showToast('Product updated successfully');
             });
         });
+
         document.getElementById('cancelEditBtn').addEventListener('click', () => {
             document.getElementById('editModal').style.display = 'none';
             document.getElementById('editImage').value = '';
         });
+
         // Delete Confirmation Modal
         let itemToDeleteKey = null;
         let itemToDeleteName = null;
@@ -1706,11 +1525,13 @@
             document.getElementById('deleteItemName').textContent = name;
             document.getElementById('deleteModal').style.display = 'flex';
         }
+
         document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
             document.getElementById('deleteModal').style.display = 'none';
             itemToDeleteKey = null;
             itemToDeleteName = null;
         });
+
         document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
             if (itemToDeleteKey) {
                 remove(ref(db, `inventory/${itemToDeleteKey}`)).then(() => {
@@ -1721,6 +1542,7 @@
                 });
             }
         });
+
         // Search (unchanged)
         document.getElementById('searchInput').addEventListener('input', filterTable);
         function filterTable() {
@@ -1731,6 +1553,7 @@
                 row.style.display = name.includes(query) ? '' : 'none';
             });
         }
+
         // Toast (unchanged)
         function showToast(message) {
             const toast = document.getElementById("toast");
@@ -1738,9 +1561,11 @@
             toast.className = "show";
             setTimeout(() => { toast.className = ""; }, 3000);
         }
+
         // Charts (updated with top selling chart and sales over time)
         Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
         const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
+
         function updateStockChart(labels, data) {
             const ctx = document.getElementById('stockValueChart').getContext('2d');
             if (stockChart) stockChart.destroy();
@@ -1750,6 +1575,7 @@
                 options: chartOptions
             });
         }
+
         function updateTopChart(labels, data) {
             const ctx = document.getElementById('topSellingChart').getContext('2d');
             if (topChart) topChart.destroy();
@@ -1780,6 +1606,7 @@
                 }
             });
         }
+
         // NEW: Sales Over Time Chart Function
         function updateTimeChartFromSales(salesData) {
             const ctx = document.getElementById('salesTimeChart').getContext('2d');
@@ -1854,7 +1681,8 @@
                 }
             });
         }
-        // Manager KPI / Ticker / Low Stock (unchanged from previous version)
+
+        // Manager KPI / Ticker / Low Stock
         let allSales = [];
         let currentPeriod = 'today';
         function calculatePeriodStats(period) {
@@ -1873,6 +1701,7 @@
             const avg = count > 0 ? (revenue / count).toFixed(0) : 0;
             return { revenue: revenue.toFixed(0), count, avg };
         }
+
         function updateKPICards() {
             const stats = calculatePeriodStats(currentPeriod);
             const yesterdayStats = { revenue: 10500 };
@@ -1907,6 +1736,7 @@
                 </div>
             `;
         }
+
         function updateLiveTicker() {
             const container = document.getElementById('liveTicker');
             container.innerHTML = '';
@@ -1935,6 +1765,7 @@
                 container.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">No sales for ${formatDateToDisplay(tickerFilterDate)}</div>`;
             }
         }
+
         function updateLowStockPanel(snapshot) {
             const data = snapshot.val();
             if (!data) return;
@@ -1951,6 +1782,7 @@
             const kpiEl = document.getElementById('kpiLowStock');
             if (kpiEl) kpiEl.textContent = lowItems.length;
         }
+
         // Period toggle
         document.querySelectorAll('.period-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1960,6 +1792,7 @@
                 updateKPICards();
             });
         });
+
         // End of Day PDF with Tables and Charts
         document.getElementById('endOfDayBtn').addEventListener('click', async () => {
             const todaySales = allSales.filter(s => {
@@ -1976,7 +1809,7 @@
             // Header
             doc.setFont("helvetica", "bold");
             doc.setFontSize(20);
-            doc.setTextColor(255, 215, 0); // Gold color
+            doc.setTextColor(255, 215, 0);
             doc.text("AURA POS", 20, 20);
            
             doc.setFontSize(12);
@@ -2124,11 +1957,11 @@
             const pieCenterY = pieY + 40;
             const pieRadius = 30;
             const colors = [
-                [255, 215, 0], // Gold
-                [0, 184, 148], // Green
-                [9, 132, 227], // Blue
-                [108, 92, 231], // Purple
-                [255, 118, 117] // Red
+                [255, 215, 0],
+                [0, 184, 148],
+                [9, 132, 227],
+                [108, 92, 231],
+                [255, 118, 117]
             ];
             if (sortedProducts.length > 0) {
                 const totalProductRevenue = sortedProducts.reduce((sum, [, data]) => sum + data.revenue, 0);
@@ -2193,6 +2026,7 @@
             doc.save(`AuraPOS_EndOfDay_${today.toISOString().slice(0,10)}.pdf`);
             showToast('✅ End of Day PDF Downloaded with Tables & Charts');
         });
+
         // Settings
         onValue(settingsRef, (snapshot) => {
             const s = snapshot.val() || {};
@@ -2202,6 +2036,7 @@
             document.getElementById('monthlyGoal').value = s.monthlyGoal || 25000;
             document.getElementById('lowStockThreshold').value = s.lowStockThreshold || 5;
         });
+
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
             const settingsData = {
                 storeName: document.getElementById('storeName').value,
@@ -2214,25 +2049,27 @@
                 showToast('✅ Settings saved');
             });
         });
+
         // Manager realtime listeners
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales); // Update sales over time chart
+            updateTimeChartFromSales(allSales);
         });
+
         onValue(inventoryRef, (snapshot) => {
             updateLowStockPanel(snapshot);
         });
+
         // Initialize
         window.addEventListener('load', () => {
             updateKPICards();
-            // Initialize empty sales chart
             updateTimeChartFromSales([]);
         });
 
-        // ADDED BY REQUEST: when stock is finished for a product it must not allow people to order
+        // when stock is finished for a product it must not allow people to order
         onValue(inventoryRef, (snapshot) => {
             setTimeout(() => {
                 const rows = document.querySelectorAll('.item-row');
@@ -2269,12 +2106,12 @@
             }, 150);
         });
 
-        // ADDED BY REQUEST: the live sales tracker time must be real time
+        // the live sales tracker time must be real time
         setInterval(() => {
             updateLiveTicker();
         }, 35000);
 
-        // ADDED BY REQUEST ONLY: Sales History Log must show the sales as animated cards with their order number
+        // Sales History Log must show the sales as animated cards with their order number
         function renderSalesCards(filteredData = null) {
             const container = document.getElementById('salesCardsContainer');
             container.innerHTML = '';
@@ -2312,23 +2149,27 @@
                 container.appendChild(card);
             });
         }
-        // Trigger cards on sales update and date change (added listeners only - no original lines modified)
+
+        // Trigger cards on sales update and date change
         const originalSalesUpdate = updateSalesHistory;
         updateSalesHistory = function() {
             originalSalesUpdate();
             renderSalesCards();
             updateAdvancedAnalytics();
         };
+
         salesDateInput.addEventListener('change', () => {
             setTimeout(() => {
                 renderSalesCards();
                 updateAdvancedAnalytics();
             }, 50);
         });
+
         onValue(salesRef, (snapshot) => {
             renderSalesCards();
             updateAdvancedAnalytics();
         });
+
         window.addEventListener('load', () => {
             setTimeout(() => {
                 renderSalesCards();
@@ -2336,7 +2177,7 @@
             }, 1200);
         });
 
-        // ADDED BY REQUEST: Advanced Sales Analytics
+        // Advanced Sales Analytics
         function updateAdvancedAnalytics() {
             const filteredSales = allSalesData.filter(sale => {
                 const saleDate = new Date(sale.timestamp);
@@ -2367,7 +2208,7 @@
             `;
         }
 
-        // ADDED BY REQUEST: Card Filtering Options
+        // Card Filtering Options
         function applyCardFilters() {
             const searchTerm = document.getElementById('cardSearchInput').value.toLowerCase().trim();
             const tier = document.getElementById('tierFilter').value;
@@ -2387,6 +2228,7 @@
                 return matchesSearch && matchesTier;
             });
 
+            // Sort
             if (sortMode === 'newest') {
                 filtered.sort((a, b) => b.timestamp - a.timestamp);
             } else if (sortMode === 'oldest') {
@@ -2400,7 +2242,7 @@
             renderSalesCards(filtered);
         }
 
-        // Auto-apply filters on input change (real-time)
+        // Auto-apply filters on input change
         setTimeout(() => {
             const searchInput = document.getElementById('cardSearchInput');
             const tierSelect = document.getElementById('tierFilter');

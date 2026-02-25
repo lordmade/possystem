@@ -139,15 +139,15 @@
             gap: 20px;
             animation: slideInDown 0.5s ease;
         }
-    
+   
         .greeting { flex: 1; min-width: 250px; }
         .greeting h1 {
             font-size: clamp(24px, 3vw, 32px);
             font-weight: 800;
         }
-    
+   
         .header-flex > div:last-child { text-align: right; min-width: 150px; }
-    
+   
         .status-pill {
             background: #E3FCEF;
             color: #00B894;
@@ -281,7 +281,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
         }
-    
+   
         tr.category-row td {
             padding: 10px clamp(10px, 2vw, 20px);
             font-weight: 800;
@@ -291,7 +291,7 @@
             text-transform: uppercase;
             animation: fadeIn 0.3s ease;
         }
-    
+   
         tr.item-row {
             background: var(--white);
             transition: var(--transition);
@@ -326,7 +326,7 @@
             text-decoration: line-through;
             color: var(--muted-text);
         }
-    
+   
         .stock-badge {
             padding: 6px 12px;
             border-radius: 10px;
@@ -676,16 +676,16 @@
                 align-items: center;
                 gap: 15px;
             }
-        
+       
             sidebar > div:first-of-type {
                 margin-bottom: 0;
                 flex: 1;
             }
-        
+       
             sidebar > p {
                 display: none;
             }
-        
+       
             sidebar > div:nth-of-type(2) {
                 display: flex;
                 flex-direction: row;
@@ -693,34 +693,34 @@
                 flex-wrap: wrap;
                 width: 100%;
             }
-        
+       
             .nav-item {
                 margin-bottom: 0;
                 padding: 10px 15px;
                 font-size: 14px;
             }
-        
+       
             .status-pill {
                 margin-top: 0;
                 width: auto;
             }
-        
+       
             main {
                 margin-left: 0;
                 width: 100%;
                 padding: 20px;
             }
-        
+       
             .header-flex {
                 flex-direction: column;
                 align-items: flex-start;
             }
-        
+       
             .header-flex > div:last-child {
                 text-align: left;
                 width: 100%;
             }
-        
+       
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
@@ -733,22 +733,22 @@
             .logo-text {
                 font-size: 20px;
             }
-        
+       
             .btn-edit, .btn-delete {
                 padding: 6px 12px;
                 font-size: 11px;
                 margin-right: 3px;
             }
-        
+       
             tr.item-row td {
                 padding: 12px 8px;
             }
-        
+       
             .period-toggle {
                 width: 100%;
                 justify-content: center;
             }
-        
+       
             .period-btn {
                 padding: 8px 15px;
                 font-size: 12px;
@@ -1286,7 +1286,7 @@
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-            
+           
                 const targetId = item.getAttribute('data-target');
                 views.forEach(view => view.classList.remove('active'));
                 document.getElementById(targetId).classList.add('active');
@@ -1384,7 +1384,7 @@
                     stockLabels.push(item.name);
                     const finalPrice = item.price - (item.price * (item.discount || 0) / 100);
                     stockValues.push(item.qty * finalPrice);
-                
+               
                     // For top selling chart
                     topSellingLabels.push(item.name);
                     topSellingData.push(item.qty > 0 ? 100 - item.qty : 0); // Higher sales = lower stock
@@ -1402,7 +1402,7 @@
                         const finalPrice = hasDiscount
                             ? (item.price - (item.price * item.discount / 100)).toFixed(2)
                             : parseFloat(item.price).toFixed(2);
-                    
+                   
                         const priceDisplay = hasDiscount
                             ? `<span class="discount-text">R ${item.price} (-${item.discount}%)</span><span>R ${finalPrice}</span>`
                             : `<span>R ${finalPrice}</span>`;
@@ -1491,9 +1491,9 @@
             const data = snapshot.val();
             allSalesData = data ? Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
                 .sort((a, b) => b.timestamp - a.timestamp) : [];
-        
+       
             updateSalesHistory();
-        
+       
             // Also update manager features
             allSales = allSalesData;
             updateLiveTicker();
@@ -1503,16 +1503,16 @@
         // Edit Modal with Image Support (unchanged) ...
         let currentEditKey = null;
         let currentImageURL = null;
-    
+   
         function openEditModal(key, item) {
             currentEditKey = key;
             currentImageURL = item.imageURL;
-        
+       
             document.getElementById('editName').value = item.name;
             document.getElementById('editPrice').value = item.price;
             document.getElementById('editDiscount').value = item.discount || 0;
             document.getElementById('editQty').value = item.qty;
-        
+       
             // Show current image if exists
             const imgPreview = document.getElementById('editImagePreview');
             if (item.imageURL) {
@@ -1521,19 +1521,19 @@
             } else {
                 imgPreview.style.display = 'none';
             }
-        
+       
             document.getElementById('editModal').style.display = 'flex';
         }
         document.getElementById('saveEditBtn').addEventListener('click', async () => {
             if (!currentEditKey) return;
-        
+       
             const file = document.getElementById('editImage').files[0];
             let newImageURL = currentImageURL;
-        
+       
             if (file) {
                 newImageURL = await uploadToCloudinary(file);
             }
-        
+       
             const updates = {
                 name: document.getElementById('editName').value,
                 price: parseFloat(document.getElementById('editPrice').value).toFixed(2),
@@ -1541,7 +1541,7 @@
                 qty: parseInt(document.getElementById('editQty').value),
                 imageURL: newImageURL
             };
-        
+       
             update(ref(db, `inventory/${currentEditKey}`), updates).then(() => {
                 document.getElementById('editModal').style.display = 'none';
                 document.getElementById('editImage').value = '';
@@ -1638,34 +1638,34 @@
         // NEW: Sales Over Time Chart Function (unchanged)
         function updateTimeChartFromSales(salesData) {
             const ctx = document.getElementById('salesTimeChart').getContext('2d');
-        
+       
             // Group sales by date
             const salesByDate = {};
-        
+       
             if (salesData && salesData.length > 0) {
                 salesData.forEach(sale => {
                     const date = new Date(sale.timestamp);
                     const dateKey = date.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
-                
+               
                     if (!salesByDate[dateKey]) {
                         salesByDate[dateKey] = 0;
                     }
                     salesByDate[dateKey] += parseFloat(sale.revenue || 0);
                 });
             }
-        
+       
             // Sort dates chronologically
             const sortedDates = Object.keys(salesByDate).sort((a, b) => {
                 const dateA = new Date(a + ' 2024');
                 const dateB = new Date(b + ' 2024');
                 return dateA - dateB;
             });
-        
+       
             const labels = sortedDates.length > 0 ? sortedDates : ['No Data'];
             const data = sortedDates.length > 0 ? sortedDates.map(date => salesByDate[date]) : [0];
-        
+       
             if (timeChart) timeChart.destroy();
-        
+       
             timeChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -1765,12 +1765,12 @@
         function updateLiveTicker() {
             const container = document.getElementById('liveTicker');
             container.innerHTML = '';
-        
+       
             const filteredSales = allSales.filter(sale => {
                 const saleDate = new Date(sale.timestamp);
                 return isSameDay(saleDate, tickerFilterDate);
             });
-        
+       
             const latest = filteredSales.slice(0, 10);
             latest.forEach(sale => {
                 const timeAgo = Math.floor((Date.now() - sale.timestamp) / 60000);
@@ -1785,7 +1785,7 @@
                 `;
                 container.appendChild(item);
             });
-        
+       
             if (latest.length === 0) {
                 container.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">No sales for ${formatDateToDisplay(tickerFilterDate)}</div>`;
             }
@@ -1822,26 +1822,26 @@
                 const today = new Date();
                 return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
             });
-        
+       
             const total = todaySales.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
             const today = new Date();
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-        
+       
             // Header
             doc.setFont("helvetica", "bold");
             doc.setFontSize(20);
             doc.setTextColor(255, 215, 0); // Gold color
             doc.text("AURA POS", 20, 20);
-        
+       
             doc.setFontSize(12);
             doc.setTextColor(0, 0, 0);
             doc.text("END OF DAY REPORT", 20, 28);
-        
+       
             // Date and Summary Box
             doc.setFillColor(247, 249, 252);
             doc.roundedRect(20, 35, 170, 30, 3, 3, 'F');
-        
+       
             doc.setFont("helvetica", "bold");
             doc.setFontSize(11);
             doc.text(`Date: ${today.toLocaleDateString('en-ZA')}`, 25, 45);
@@ -1895,7 +1895,7 @@
             for (let i = 0; i < 24; i++) {
                 salesByHour[i] = 0;
             }
-        
+       
             todaySales.forEach(sale => {
                 const hour = new Date(sale.timestamp).getHours();
                 salesByHour[hour] += parseFloat(sale.revenue || 0);
@@ -1914,7 +1914,7 @@
             Object.keys(salesByHour).forEach((hour, index) => {
                 const value = salesByHour[hour];
                 const barHeight = (value / maxValue) * (chartHeight - 10);
-            
+           
                 if (value > 0) {
                     // Gradient effect using multiple rectangles
                     const gradientSteps = 5;
@@ -1924,7 +1924,7 @@
                         const g = Math.floor(255 - (255 - 215) * ratio);
                         const b = Math.floor(255 - (255 - 0) * ratio);
                         doc.setFillColor(r, g, b);
-                    
+                   
                         const stepHeight = barHeight / gradientSteps;
                         doc.rect(
                             20 + (index * barWidth) + 1,
@@ -1990,17 +1990,17 @@
                 let currentAngle = 0;
                 sortedProducts.forEach(([name, data], index) => {
                     const sliceAngle = (data.revenue / totalProductRevenue) * 2 * Math.PI;
-                
+               
                     // Draw slice
                     doc.setFillColor(...colors[index % colors.length]);
                     doc.setDrawColor(255, 255, 255);
                     doc.setLineWidth(1);
-                
+               
                     // Create pie slice using multiple line segments
                     const steps = 20;
                     const angleStep = sliceAngle / steps;
                     let points = [{x: pieCenterX, y: pieCenterY}];
-                
+               
                     for (let i = 0; i <= steps; i++) {
                         const angle = currentAngle + (i * angleStep);
                         points.push({
@@ -2008,7 +2008,7 @@
                             y: pieCenterY + pieRadius * Math.sin(angle)
                         });
                     }
-                
+               
                     // Draw the slice
                     doc.lines(
                         points.map((p, i) => i === 0 ? [0, 0] : [p.x - points[i-1].x, p.y - points[i-1].y]),
@@ -2152,7 +2152,7 @@
                     </div>
                     <div class="icon">🧾</div>
                     <div class="sale-time">🕒 ${date.toLocaleDateString('en-ZA')} • ${date.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'})}</div>
-                    <div class="customer-info">👤 Loyal Customer • Jane Smith</div>
+                    <div class="customer-info">👤 ${sale.customer || 'Walk-in Customer'}</div>
                     <div class="product-name">${sale.name}</div>
                     <div class="revenue">R ${parseFloat(sale.revenue).toFixed(2)}</div>
                     <div class="points-earned">⭐ +${pointsEarned} Loyalty Points Earned</div>

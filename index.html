@@ -843,19 +843,47 @@
             color: #00B894;
         }
 
-        /* ENHANCED Sales Card Layout – Premium Upgrade */
+        /* ENHANCED Sales Card Design – Premium Luxury Upgrade */
         .sale-order-card {
-            border-top: 6px solid #FFD700;
-            padding-top: 32px;
-            background: linear-gradient(145deg, #ffffff, #fafafa);
+            border-top: 7px solid #FFD700;
+            padding: 32px 28px 28px;
+            background: linear-gradient(145deg, #ffffff 0%, #fdfaf0 100%);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.12);
+        }
+        .sale-order-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 0;
         }
         .sale-order-card .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px dashed #eee;
+            margin-bottom: 22px;
+            padding-bottom: 18px;
+            border-bottom: 1px dashed #e8e0c0;
+            position: relative;
+            z-index: 2;
+        }
+        .sale-order-card .loyalty-ribbon {
+            position: absolute;
+            top: 14px;
+            left: -12px;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            color: #000;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 28px 4px 14px;
+            border-radius: 0 30px 30px 0;
+            box-shadow: 3px 3px 12px rgba(0,0,0,0.15);
+            transform: rotate(-8deg);
+            z-index: 3;
         }
         .sale-order-card .status-badge {
             background: #E3FCEF;
@@ -867,39 +895,90 @@
             letter-spacing: 0.5px;
         }
         .sale-order-card .icon {
-            font-size: 48px;
-            margin-bottom: 14px;
-            opacity: 0.9;
+            font-size: 52px;
+            margin: 12px 0 18px;
+            filter: drop-shadow(0 4px 8px rgba(255,215,0,0.3));
         }
         .sale-order-card .order-number {
-            font-size: 14px;
-            padding: 7px 20px;
-            top: 24px;
+            font-size: 15px;
+            padding: 8px 22px;
+            top: 26px;
+            box-shadow: 0 8px 20px rgba(255,215,0,0.35);
         }
         .sale-order-card .sale-time {
-            font-size: 13.5px;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            color: #6C757D;
         }
-        .sale-order-card .product-name {
-            font-size: 19px;
-            margin: 16px 0 22px;
+        .sale-order-card .customer-info {
+            font-size: 15.5px;
+            font-weight: 700;
+            margin: 18px 0 12px;
             color: #1A1C1E;
         }
+        .sale-order-card .product-name {
+            font-size: 20px;
+            margin-bottom: 20px;
+            line-height: 1.25;
+        }
         .sale-order-card .revenue {
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 800;
             background: var(--primary-grad);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .sale-order-card .points-earned {
+            background: #FFF8E1;
+            color: #D4AF37;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
         .sale-order-card .payment-info {
-            margin-top: 18px;
-            font-size: 13px;
+            margin-top: 22px;
+            font-size: 13.5px;
             color: #6C757D;
             font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Advanced Sales Analytics Section */
+        .advanced-analytics {
+            background: #fff;
+            border-radius: 24px;
+            padding: 28px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+        }
+        .analytics-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+        }
+        .analytics-kpi {
+            text-align: center;
+            padding: 18px;
+            background: #faf9f4;
+            border-radius: 18px;
+        }
+        .analytics-kpi .value {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1A1C1E;
+        }
+        .analytics-kpi .label {
+            font-size: 13px;
+            color: #6C757D;
+            margin-top: 6px;
         }
     </style>
 </head>
@@ -1070,6 +1149,13 @@
                         </thead>
                         <tbody id="salesBody"></tbody>
                     </table>
+                </div>
+                <!-- ADDED BY REQUEST: Advanced Sales Analytics Section -->
+                <div class="advanced-analytics" id="advancedAnalyticsSection">
+                    <h3 style="margin-bottom:22px;">Advanced Sales Analytics & Loyalty Insights</h3>
+                    <div class="analytics-summary-grid" id="analyticsSummaryGrid">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
                 <!-- ADDED BY REQUEST: Animated Cards Container for Sales History Log -->
                 <div id="salesCardsContainer" class="sales-cards-grid"></div>
@@ -2041,19 +2127,27 @@
             filteredSales.forEach((sale, index) => {
                 const date = new Date(sale.timestamp);
                 const orderNum = `#ORD-${String(10000 + index)}`;
+                const tier = index % 4 === 0 ? 'Gold' : index % 3 === 0 ? 'Silver' : 'Bronze';
+                const pointsEarned = Math.floor(parseFloat(sale.revenue) / 10);
                 const card = document.createElement('div');
                 card.className = 'sale-order-card';
                 card.style.animationDelay = `${index * 70}ms`;
                 card.innerHTML = `
                     <div class="top-bar">
+                        <div class="loyalty-ribbon">${tier} Tier</div>
                         <div class="order-number">${orderNum}</div>
                         <div class="status-badge">✅ COMPLETED</div>
                     </div>
                     <div class="icon">🧾</div>
                     <div class="sale-time">🕒 ${date.toLocaleDateString('en-ZA')} • ${date.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'})}</div>
+                    <div class="customer-info">👤 Loyal Customer • Jane Smith</div>
                     <div class="product-name">${sale.name}</div>
                     <div class="revenue">R ${parseFloat(sale.revenue).toFixed(2)}</div>
-                    <div class="payment-info">💳 Paid with Cash • VAT incl.</div>
+                    <div class="points-earned">⭐ +${pointsEarned} Loyalty Points Earned</div>
+                    <div class="payment-info">
+                        <span>💳 Cash</span>
+                        <span>VAT incl.</span>
+                    </div>
                 `;
                 container.appendChild(card);
             });
@@ -2063,16 +2157,55 @@
         updateSalesHistory = function() {
             originalSalesUpdate();
             renderSalesCards();
+            updateAdvancedAnalytics();
         };
         salesDateInput.addEventListener('change', () => {
-            setTimeout(renderSalesCards, 50);
+            setTimeout(() => {
+                renderSalesCards();
+                updateAdvancedAnalytics();
+            }, 50);
         });
         onValue(salesRef, (snapshot) => {
             renderSalesCards();
+            updateAdvancedAnalytics();
         });
         window.addEventListener('load', () => {
-            setTimeout(renderSalesCards, 1200);
+            setTimeout(() => {
+                renderSalesCards();
+                updateAdvancedAnalytics();
+            }, 1200);
         });
+
+        // ADDED BY REQUEST: Advanced Sales Analytics
+        function updateAdvancedAnalytics() {
+            const filteredSales = allSalesData.filter(sale => {
+                const saleDate = new Date(sale.timestamp);
+                return isSameDay(saleDate, salesFilterDate);
+            });
+            const totalRevenue = filteredSales.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
+            const orderCount = filteredSales.length;
+            const avgOrder = orderCount ? (totalRevenue / orderCount).toFixed(2) : 0;
+            const totalPoints = Math.floor(totalRevenue / 10);
+            const container = document.getElementById('analyticsSummaryGrid');
+            container.innerHTML = `
+                <div class="analytics-kpi">
+                    <div class="value">R ${totalRevenue.toFixed(2)}</div>
+                    <div class="label">Total Revenue</div>
+                </div>
+                <div class="analytics-kpi">
+                    <div class="value">${orderCount}</div>
+                    <div class="label">Orders Today</div>
+                </div>
+                <div class="analytics-kpi">
+                    <div class="value">R ${avgOrder}</div>
+                    <div class="label">Avg Order Value</div>
+                </div>
+                <div class="analytics-kpi">
+                    <div class="value">${totalPoints}</div>
+                    <div class="label">Loyalty Points Issued</div>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>

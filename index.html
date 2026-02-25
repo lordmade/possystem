@@ -623,7 +623,7 @@
             margin-bottom: 15px;
             border: 2px dashed #ddd;
         }
-        /* Date Filter Styles - Matching the image */
+        /* Date Filter Styles */
         .date-filter-container {
             display: flex;
             align-items: center;
@@ -747,16 +747,13 @@
                 align-items: center;
                 gap: 15px;
             }
-           
             sidebar > div:first-of-type {
                 margin-bottom: 0;
                 flex: 1;
             }
-           
             sidebar > p {
                 display: none;
             }
-           
             sidebar > div:nth-of-type(2) {
                 display: flex;
                 flex-direction: row;
@@ -764,34 +761,28 @@
                 flex-wrap: wrap;
                 width: 100%;
             }
-           
             .nav-item {
                 margin-bottom: 0;
                 padding: 10px 15px;
                 font-size: 14px;
             }
-           
             .status-pill {
                 margin-top: 0;
                 width: auto;
             }
-           
             main {
                 margin-left: 0;
                 width: 100%;
                 padding: 20px;
             }
-           
             .header-flex {
                 flex-direction: column;
                 align-items: flex-start;
             }
-           
             .header-flex > div:last-child {
                 text-align: left;
                 width: 100%;
             }
-           
             .analytics-grid {
                 grid-template-columns: 1fr;
             }
@@ -804,22 +795,18 @@
             .logo-text {
                 font-size: 20px;
             }
-           
             .btn-edit, .btn-delete {
                 padding: 6px 12px;
                 font-size: 11px;
                 margin-right: 3px;
             }
-           
             tr.item-row td {
                 padding: 12px 8px;
             }
-           
             .period-toggle {
                 width: 100%;
                 justify-content: center;
             }
-           
             .period-btn {
                 padding: 8px 15px;
                 font-size: 12px;
@@ -846,7 +833,7 @@
             background: #a8a8a8;
         }
 
-        /* ADDED BY REQUEST: Sales History Log as Animated Cards with Order Number */
+        /* Sales History Log as Animated Cards with Order Number */
         .sales-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -999,7 +986,7 @@
             margin-top: 6px;
         }
 
-        /* ADDED BY REQUEST: Card Filtering Options */
+        /* Card Filtering Options */
         .sales-filter-bar {
             display: flex;
             gap: 12px;
@@ -1340,33 +1327,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js ";
         import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js ";
-        
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
-            authDomain: "pinotp-d7ef5.firebaseapp.com",
-            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com ",
-            projectId: "pinotp-d7ef5",
-            storageBucket: "pinotp-d7ef5.firebasestorage.app",
-            messagingSenderId: "708458917827",
-            appId: "1:708458917827:web:375de278577df0adcf9776"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const employeesRef = ref(db, 'employees');
-        const inventoryRef = ref(db, 'inventory');
-        const salesRef = ref(db, 'sales');
-        const settingsRef = ref(db, 'settings');
-        
-        let allEmployees = [];
-        
-        // Load employees data
-        onValue(employeesRef, (snapshot) => {
-            const data = snapshot.val();
-            allEmployees = data ? Object.entries(data).map(([id, emp]) => ({ id, ...emp })) : [];
-        });
-        
         // 0. Tab Switching Logic (unchanged)
         const navItems = document.querySelectorAll('.nav-item');
         const views = document.querySelectorAll('.view');
@@ -1378,7 +1338,6 @@
             'view-employees': { title: 'Employee Management', subtitle: 'Manage employees and their access to the cashier system.' },
             'view-settings': { title: 'Settings', subtitle: 'Manage your store configurations and preferences.' }
         };
-        
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
@@ -1391,20 +1350,33 @@
                 pageSubtitle.innerText = pageHeaders[targetId].subtitle;
             });
         });
-        
-        // Chart Instances
+        // Firebase Config (unchanged)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
+            authDomain: "pinotp-d7ef5.firebaseapp.com",
+            databaseURL: "https://pinotp-d7ef5-default-rtdb.firebaseio.com ",
+            projectId: "pinotp-d7ef5",
+            storageBucket: "pinotp-d7ef5.firebasestorage.app",
+            messagingSenderId: "708458917827",
+            appId: "1:708458917827:web:375de278577df0adcf9776"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const employeesRef = ref(db, 'employees');
+        const inventoryRef = ref(db, 'inventory');
+        const salesRef = ref(db, 'sales');
+        const settingsRef = ref(db, 'settings');
+        // Chart Instances (unchanged)
         let stockChart, topChart, timeChart;
-        
-        // Clock
+        let allEmployees = [];
+        // Clock (unchanged)
         setInterval(() => {
             const now = new Date();
             document.getElementById('clock').innerText = now.toLocaleTimeString('en-ZA');
         }, 1000);
-        
-        // ==================== CLOUDINARY CONFIG ====================
-        const CLOUD_NAME = "dv5bsbydu";
-        const UPLOAD_PRESET = "admin_tlaka";
-        
+        // ==================== CLOUDINARY CONFIG - REPLACE WITH YOURS ====================
+        const CLOUD_NAME = "dv5bsbydu"; // ← CHANGE THIS
+        const UPLOAD_PRESET = "admin_tlaka"; // ← CHANGE THIS (create unsigned preset in Cloudinary dashboard)
         async function uploadToCloudinary(file) {
             if (!file) return null;
             const formData = new FormData();
@@ -1417,7 +1389,7 @@
             const data = await response.json();
             return data.secure_url;
         }
-        
+        // ================================================================================
         // ============================= EMPLOYEE MANAGEMENT =============================
         // Auto-generate Employee ID
         function generateEmployeeId() {
@@ -1428,6 +1400,13 @@
         function updateAutoEmpId() {
             document.getElementById('autoEmpId').textContent = generateEmployeeId();
         }
+        
+        // Load employees data
+        onValue(employeesRef, (snapshot) => {
+            const data = snapshot.val();
+            allEmployees = data ? Object.entries(data).map(([id, emp]) => ({ id, ...emp })) : [];
+            updateAutoEmpId();
+        });
         
         document.getElementById('empName').addEventListener('input', updateAutoEmpId);
         document.getElementById('empRole').addEventListener('change', updateAutoEmpId);
@@ -1499,10 +1478,8 @@
                 empBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#999; padding:40px;">No employees added yet.</td></tr>';
             }
         });
-        
         // ================================================================================
-        
-        // Add Item
+        // Add Item (enhanced with image)
         document.getElementById('addBtn').addEventListener('click', async () => {
             const name = document.getElementById('itemName').value.trim();
             const category = document.getElementById('itemCategory').value;
@@ -1510,14 +1487,11 @@
             const discount = document.getElementById('itemDiscount').value || 0;
             const qty = document.getElementById('itemQty').value;
             const file = document.getElementById('itemImage').files[0];
-            
             if (!name || !price || !qty) return;
-            
             let imageURL = null;
             if (file) {
                 imageURL = await uploadToCloudinary(file);
             }
-            
             push(inventoryRef, {
                 name: name,
                 category: category !== 'Uncategorized' ? category : 'General',
@@ -1526,6 +1500,7 @@
                 qty: parseInt(qty),
                 imageURL: imageURL
             }).then(() => {
+                // Clear form
                 document.getElementById('itemName').value = '';
                 document.getElementById('itemCategory').value = 'Uncategorized';
                 document.getElementById('itemPrice').value = '';
@@ -1535,8 +1510,7 @@
                 showToast(`Added ${name} to inventory!`);
             });
         });
-        
-        // Inventory Sync
+        // Inventory Sync (enhanced with image + edit/delete buttons, removed sell button)
         onValue(inventoryRef, (snapshot) => {
             const data = snapshot.val();
             const tableBody = document.getElementById('inventoryBody');
@@ -1545,7 +1519,6 @@
             const stockValues = [];
             const topSellingLabels = [];
             const topSellingData = [];
-            
             if (data) {
                 const groupedItems = {};
                 Object.keys(data).forEach(key => {
@@ -1557,16 +1530,15 @@
                     const finalPrice = item.price - (item.price * (item.discount || 0) / 100);
                     stockValues.push(item.qty * finalPrice);
                    
+                    // For top selling chart
                     topSellingLabels.push(item.name);
-                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0);
+                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0); // Higher sales = lower stock
                 });
-                
                 Object.keys(groupedItems).forEach(cat => {
                     const catRow = document.createElement('tr');
                     catRow.className = 'category-row';
                     catRow.innerHTML = `<td colspan="4">${cat}</td>`;
                     tableBody.appendChild(catRow);
-                    
                     groupedItems[cat].forEach(item => {
                         const row = document.createElement('tr');
                         row.className = 'item-row';
@@ -1579,15 +1551,12 @@
                         const priceDisplay = hasDiscount
                             ? `<span class="discount-text">R ${item.price} (-${item.discount}%)</span><span>R ${finalPrice}</span>`
                             : `<span>R ${finalPrice}</span>`;
-                        
                         let badgeClass = 'stock-safe';
                         if (item.qty <= 0) badgeClass = 'stock-out';
                         else if (item.qty <= 5) badgeClass = 'stock-low';
-                        
                         const imgHTML = item.imageURL
                             ? `<img src="${item.imageURL}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;margin-right:12px;vertical-align:middle;">`
                             : '';
-                        
                         row.innerHTML = `
                             <td>${imgHTML}<strong style="font-size:15px">${item.name}</strong></td>
                             <td><span class="stock-badge ${badgeClass}">${item.qty} units</span></td>
@@ -1597,7 +1566,6 @@
                                 <button class="btn-delete" data-id="${item.key}" data-name="${item.name}">Delete</button>
                             </td>
                         `;
-                        
                         row.querySelector('.btn-edit').onclick = () => openEditModal(item.key, item);
                         row.querySelector('.btn-delete').onclick = () => openDeleteModal(item.key, item.name);
                         tableBody.appendChild(row);
@@ -1606,34 +1574,29 @@
             } else {
                 tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; padding:40px;">No inventory found. Add your first product.</td></tr>';
             }
-            
             updateStockChart(stockLabels, stockValues);
             updateTopChart(topSellingLabels, topSellingData);
             filterTable();
         });
-        
         // Date Filter Logic
         let tickerFilterDate = new Date();
         let salesFilterDate = new Date();
         let allSalesData = [];
-        
         function formatDateToDisplay(date) {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
         }
-        
         function formatDateToInput(date) {
             return date.toISOString().split('T')[0];
         }
-        
         function isSameDay(date1, date2) {
             return date1.getDate() === date2.getDate() &&
                    date1.getMonth() === date2.getMonth() &&
                    date1.getFullYear() === date2.getFullYear();
         }
-        
+        // Ticker Date Filter
         const tickerDateInput = document.getElementById('tickerDateInput');
         const tickerDateDisplay = document.getElementById('tickerDateDisplay');
         const tickerDateFilterBtn = document.getElementById('tickerDateFilterBtn');
@@ -1649,7 +1612,7 @@
                 updateLiveTicker();
             }
         });
-        
+        // Sales History Date Filter
         const salesDateInput = document.getElementById('salesDateInput');
         const salesDateDisplay = document.getElementById('salesDateDisplay');
         const salesDateFilterBtn = document.getElementById('salesDateFilterBtn');
@@ -1665,24 +1628,24 @@
                 updateSalesHistory();
             }
         });
-        
+        // Sales History - REAL DATA with Date Filter
         function updateSalesHistory() {
             // Table removed - sales shown as cards only
         }
-        
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSalesData = data ? Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
                 .sort((a, b) => b.timestamp - a.timestamp) : [];
            
             updateSalesHistory();
+           
+            // Also update manager features
             allSales = allSalesData;
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales);
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
-        
-        // Edit Modal
+        // Edit Modal with Image Support
         let currentEditKey = null;
         let currentImageURL = null;
        
@@ -1695,6 +1658,7 @@
             document.getElementById('editDiscount').value = item.discount || 0;
             document.getElementById('editQty').value = item.qty;
            
+            // Show current image if exists
             const imgPreview = document.getElementById('editImagePreview');
             if (item.imageURL) {
                 imgPreview.src = item.imageURL;
@@ -1705,7 +1669,6 @@
            
             document.getElementById('editModal').style.display = 'flex';
         }
-        
         document.getElementById('saveEditBtn').addEventListener('click', async () => {
             if (!currentEditKey) return;
            
@@ -1730,29 +1693,24 @@
                 showToast('Product updated successfully');
             });
         });
-        
         document.getElementById('cancelEditBtn').addEventListener('click', () => {
             document.getElementById('editModal').style.display = 'none';
             document.getElementById('editImage').value = '';
         });
-        
-        // Delete Modal
+        // Delete Confirmation Modal
         let itemToDeleteKey = null;
         let itemToDeleteName = null;
-        
         function openDeleteModal(key, name) {
             itemToDeleteKey = key;
             itemToDeleteName = name;
             document.getElementById('deleteItemName').textContent = name;
             document.getElementById('deleteModal').style.display = 'flex';
         }
-        
         document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
             document.getElementById('deleteModal').style.display = 'none';
             itemToDeleteKey = null;
             itemToDeleteName = null;
         });
-        
         document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
             if (itemToDeleteKey) {
                 remove(ref(db, `inventory/${itemToDeleteKey}`)).then(() => {
@@ -1763,8 +1721,7 @@
                 });
             }
         });
-        
-        // Search
+        // Search (unchanged)
         document.getElementById('searchInput').addEventListener('input', filterTable);
         function filterTable() {
             const query = document.getElementById('searchInput').value.toLowerCase();
@@ -1774,19 +1731,16 @@
                 row.style.display = name.includes(query) ? '' : 'none';
             });
         }
-        
-        // Toast
+        // Toast (unchanged)
         function showToast(message) {
             const toast = document.getElementById("toast");
             toast.innerHTML = message;
             toast.className = "show";
             setTimeout(() => { toast.className = ""; }, 3000);
         }
-        
-        // Charts
+        // Charts (updated with top selling chart and sales over time)
         Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
         const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-        
         function updateStockChart(labels, data) {
             const ctx = document.getElementById('stockValueChart').getContext('2d');
             if (stockChart) stockChart.destroy();
@@ -1796,7 +1750,6 @@
                 options: chartOptions
             });
         }
-        
         function updateTopChart(labels, data) {
             const ctx = document.getElementById('topSellingChart').getContext('2d');
             if (topChart) topChart.destroy();
@@ -1827,10 +1780,11 @@
                 }
             });
         }
-        
+        // NEW: Sales Over Time Chart Function
         function updateTimeChartFromSales(salesData) {
             const ctx = document.getElementById('salesTimeChart').getContext('2d');
            
+            // Group sales by date
             const salesByDate = {};
            
             if (salesData && salesData.length > 0) {
@@ -1845,6 +1799,7 @@
                 });
             }
            
+            // Sort dates chronologically
             const sortedDates = Object.keys(salesByDate).sort((a, b) => {
                 const dateA = new Date(a + ' 2024');
                 const dateB = new Date(b + ' 2024');
@@ -1899,11 +1854,9 @@
                 }
             });
         }
-        
-        // Manager KPI
+        // Manager KPI / Ticker / Low Stock (unchanged from previous version)
         let allSales = [];
         let currentPeriod = 'today';
-        
         function calculatePeriodStats(period) {
             const now = Date.now();
             let startTime = 0;
@@ -1920,12 +1873,10 @@
             const avg = count > 0 ? (revenue / count).toFixed(0) : 0;
             return { revenue: revenue.toFixed(0), count, avg };
         }
-        
         function updateKPICards() {
             const stats = calculatePeriodStats(currentPeriod);
             const yesterdayStats = { revenue: 10500 };
             const percentChange = stats.revenue > 0 ? Math.round(((stats.revenue - yesterdayStats.revenue) / yesterdayStats.revenue) * 100) : 0;
-            
             document.getElementById('kpiGrid').innerHTML = `
                 <div class="kpi-card">
                     <div class="kpi-label">Revenue</div>
@@ -1956,7 +1907,6 @@
                 </div>
             `;
         }
-        
         function updateLiveTicker() {
             const container = document.getElementById('liveTicker');
             container.innerHTML = '';
@@ -1985,7 +1935,6 @@
                 container.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">No sales for ${formatDateToDisplay(tickerFilterDate)}</div>`;
             }
         }
-        
         function updateLowStockPanel(snapshot) {
             const data = snapshot.val();
             if (!data) return;
@@ -2002,7 +1951,7 @@
             const kpiEl = document.getElementById('kpiLowStock');
             if (kpiEl) kpiEl.textContent = lowItems.length;
         }
-        
+        // Period toggle
         document.querySelectorAll('.period-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
@@ -2011,8 +1960,7 @@
                 updateKPICards();
             });
         });
-        
-        // End of Day PDF
+        // End of Day PDF with Tables and Charts
         document.getElementById('endOfDayBtn').addEventListener('click', async () => {
             const todaySales = allSales.filter(s => {
                 const d = new Date(s.timestamp);
@@ -2025,15 +1973,17 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
            
+            // Header
             doc.setFont("helvetica", "bold");
             doc.setFontSize(20);
-            doc.setTextColor(255, 215, 0);
+            doc.setTextColor(255, 215, 0); // Gold color
             doc.text("AURA POS", 20, 20);
            
             doc.setFontSize(12);
             doc.setTextColor(0, 0, 0);
             doc.text("END OF DAY REPORT", 20, 28);
            
+            // Date and Summary Box
             doc.setFillColor(247, 249, 252);
             doc.roundedRect(20, 35, 170, 30, 3, 3, 'F');
            
@@ -2043,11 +1993,10 @@
             doc.text(`Total Revenue: R ${total.toFixed(2)}`, 25, 55);
             doc.text(`Transactions: ${todaySales.length}`, 100, 45);
             doc.text(`Avg Transaction: R ${todaySales.length > 0 ? (total / todaySales.length).toFixed(2) : '0.00'}`, 100, 55);
-            
+            // Sales Table
             doc.setFont("helvetica", "bold");
             doc.setFontSize(14);
             doc.text("Sales Details", 20, 80);
-            
             const tableData = todaySales.map(sale => {
                 const date = new Date(sale.timestamp);
                 return [
@@ -2056,7 +2005,6 @@
                     `R ${parseFloat(sale.revenue).toFixed(2)}`
                 ];
             });
-            
             doc.autoTable({
                 startY: 85,
                 head: [['Time', 'Product', 'Revenue']],
@@ -2077,17 +2025,17 @@
                     2: { cellWidth: 40, halign: 'right' }
                 }
             });
-            
+            // Check if we need a new page for charts
             let chartY = doc.lastAutoTable.finalY + 20;
             if (chartY > 200) {
                 doc.addPage();
                 chartY = 30;
             }
-            
+            // Sales by Hour Chart
             doc.setFont("helvetica", "bold");
             doc.setFontSize(14);
             doc.text("Sales by Hour", 20, chartY);
-            
+            // Group sales by hour
             const salesByHour = {};
             for (let i = 0; i < 24; i++) {
                 salesByHour[i] = 0;
@@ -2097,22 +2045,23 @@
                 const hour = new Date(sale.timestamp).getHours();
                 salesByHour[hour] += parseFloat(sale.revenue || 0);
             });
-            
+            // Draw bar chart
             const chartStartY = chartY + 10;
             const chartHeight = 50;
             const chartWidth = 170;
             const barWidth = chartWidth / 24;
             const maxValue = Math.max(...Object.values(salesByHour)) || 1;
-            
+            // Chart background
             doc.setDrawColor(200, 200, 200);
             doc.setFillColor(255, 255, 255);
             doc.rect(20, chartStartY, chartWidth, chartHeight, 'FD');
-            
+            // Draw bars
             Object.keys(salesByHour).forEach((hour, index) => {
                 const value = salesByHour[hour];
                 const barHeight = (value / maxValue) * (chartHeight - 10);
                
                 if (value > 0) {
+                    // Gradient effect using multiple rectangles
                     const gradientSteps = 5;
                     for (let i = 0; i < gradientSteps; i++) {
                         const ratio = i / gradientSteps;
@@ -2132,33 +2081,33 @@
                     }
                 }
             });
-            
+            // Chart axes
             doc.setDrawColor(100, 100, 100);
             doc.setLineWidth(0.5);
             doc.line(20, chartStartY + chartHeight - 5, 20 + chartWidth, chartStartY + chartHeight - 5);
             doc.line(20, chartStartY, 20, chartStartY + chartHeight - 5);
-            
+            // X-axis labels (every 4 hours)
             doc.setFont("helvetica", "normal");
             doc.setFontSize(8);
             doc.setTextColor(100, 100, 100);
             for (let i = 0; i < 24; i += 4) {
                 doc.text(`${i}:00`, 20 + (i * barWidth) + 2, chartStartY + chartHeight + 5);
             }
-            
+            // Y-axis label
             doc.setFontSize(9);
             doc.text(`Max: R ${maxValue.toFixed(0)}`, 5, chartStartY + 5);
-            
+            // Check for new page for pie chart
             let pieY = chartStartY + chartHeight + 30;
             if (pieY > 250) {
                 doc.addPage();
                 pieY = 40;
             }
-            
+            // Top Products Pie Chart
             doc.setFont("helvetica", "bold");
             doc.setFontSize(14);
             doc.setTextColor(0, 0, 0);
             doc.text("Top Selling Products", 20, pieY);
-            
+            // Group sales by product
             const salesByProduct = {};
             todaySales.forEach(sale => {
                 if (!salesByProduct[sale.name]) {
@@ -2167,33 +2116,32 @@
                 salesByProduct[sale.name].count++;
                 salesByProduct[sale.name].revenue += parseFloat(sale.revenue || 0);
             });
-            
             const sortedProducts = Object.entries(salesByProduct)
                 .sort((a, b) => b[1].revenue - a[1].revenue)
                 .slice(0, 5);
-            
+            // Draw simple pie chart
             const pieCenterX = 60;
             const pieCenterY = pieY + 40;
             const pieRadius = 30;
             const colors = [
-                [255, 215, 0],
-                [0, 184, 148],
-                [9, 132, 227],
-                [108, 92, 231],
-                [255, 118, 117]
+                [255, 215, 0], // Gold
+                [0, 184, 148], // Green
+                [9, 132, 227], // Blue
+                [108, 92, 231], // Purple
+                [255, 118, 117] // Red
             ];
-            
             if (sortedProducts.length > 0) {
                 const totalProductRevenue = sortedProducts.reduce((sum, [, data]) => sum + data.revenue, 0);
                 let currentAngle = 0;
-                
                 sortedProducts.forEach(([name, data], index) => {
                     const sliceAngle = (data.revenue / totalProductRevenue) * 2 * Math.PI;
                    
+                    // Draw slice
                     doc.setFillColor(...colors[index % colors.length]);
                     doc.setDrawColor(255, 255, 255);
                     doc.setLineWidth(1);
                    
+                    // Create pie slice using multiple line segments
                     const steps = 20;
                     const angleStep = sliceAngle / steps;
                     let points = [{x: pieCenterX, y: pieCenterY}];
@@ -2206,6 +2154,7 @@
                         });
                     }
                    
+                    // Draw the slice
                     doc.lines(
                         points.map((p, i) => i === 0 ? [0, 0] : [p.x - points[i-1].x, p.y - points[i-1].y]),
                         pieCenterX,
@@ -2215,7 +2164,7 @@
                     );
                     currentAngle += sliceAngle;
                 });
-                
+                // Legend
                 let legendY = pieY + 15;
                 sortedProducts.forEach(([name, data], index) => {
                     doc.setFillColor(...colors[index % colors.length]);
@@ -2231,7 +2180,7 @@
                 doc.setFontSize(10);
                 doc.text("No sales data available", pieCenterX - 20, pieCenterY);
             }
-            
+            // Footer
             const pageCount = doc.getNumberOfPages();
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
@@ -2241,11 +2190,9 @@
                 doc.text(`Page ${i} of ${pageCount} - Generated by AuraPOS`, 20, 290);
                 doc.text(`Pretoria, South Africa`, 160, 290);
             }
-            
             doc.save(`AuraPOS_EndOfDay_${today.toISOString().slice(0,10)}.pdf`);
             showToast('✅ End of Day PDF Downloaded with Tables & Charts');
         });
-        
         // Settings
         onValue(settingsRef, (snapshot) => {
             const s = snapshot.val() || {};
@@ -2255,7 +2202,6 @@
             document.getElementById('monthlyGoal').value = s.monthlyGoal || 25000;
             document.getElementById('lowStockThreshold').value = s.lowStockThreshold || 5;
         });
-        
         document.getElementById('saveSettingsBtn').addEventListener('click', () => {
             const settingsData = {
                 storeName: document.getElementById('storeName').value,
@@ -2268,24 +2214,25 @@
                 showToast('✅ Settings saved');
             });
         });
-        
+        // Manager realtime listeners
         onValue(salesRef, (snapshot) => {
             const data = snapshot.val();
             allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
             updateLiveTicker();
             updateKPICards();
-            updateTimeChartFromSales(allSales);
+            updateTimeChartFromSales(allSales); // Update sales over time chart
         });
-        
         onValue(inventoryRef, (snapshot) => {
             updateLowStockPanel(snapshot);
         });
-        
+        // Initialize
         window.addEventListener('load', () => {
             updateKPICards();
+            // Initialize empty sales chart
             updateTimeChartFromSales([]);
         });
 
+        // ADDED BY REQUEST: when stock is finished for a product it must not allow people to order
         onValue(inventoryRef, (snapshot) => {
             setTimeout(() => {
                 const rows = document.querySelectorAll('.item-row');
@@ -2322,10 +2269,12 @@
             }, 150);
         });
 
+        // ADDED BY REQUEST: the live sales tracker time must be real time
         setInterval(() => {
             updateLiveTicker();
         }, 35000);
 
+        // ADDED BY REQUEST ONLY: Sales History Log must show the sales as animated cards with their order number
         function renderSalesCards(filteredData = null) {
             const container = document.getElementById('salesCardsContainer');
             container.innerHTML = '';
@@ -2333,12 +2282,10 @@
                 const saleDate = new Date(sale.timestamp);
                 return isSameDay(saleDate, salesFilterDate);
             });
-            
             if (dataToRender.length === 0) {
                 container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#999;">No sales recorded for ${formatDateToDisplay(salesFilterDate)}.</div>`;
                 return;
             }
-            
             dataToRender.forEach((sale, index) => {
                 const date = new Date(sale.timestamp);
                 const orderNum = `#ORD-${String(10000 + index)}`;
@@ -2365,26 +2312,23 @@
                 container.appendChild(card);
             });
         }
-        
+        // Trigger cards on sales update and date change (added listeners only - no original lines modified)
         const originalSalesUpdate = updateSalesHistory;
         updateSalesHistory = function() {
             originalSalesUpdate();
             renderSalesCards();
             updateAdvancedAnalytics();
         };
-        
         salesDateInput.addEventListener('change', () => {
             setTimeout(() => {
                 renderSalesCards();
                 updateAdvancedAnalytics();
             }, 50);
         });
-        
         onValue(salesRef, (snapshot) => {
             renderSalesCards();
             updateAdvancedAnalytics();
         });
-        
         window.addEventListener('load', () => {
             setTimeout(() => {
                 renderSalesCards();
@@ -2392,18 +2336,17 @@
             }, 1200);
         });
 
+        // ADDED BY REQUEST: Advanced Sales Analytics
         function updateAdvancedAnalytics() {
             const filteredSales = allSalesData.filter(sale => {
                 const saleDate = new Date(sale.timestamp);
                 return isSameDay(saleDate, salesFilterDate);
             });
-            
             const totalRevenue = filteredSales.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
             const orderCount = filteredSales.length;
             const avgOrder = orderCount ? (totalRevenue / orderCount).toFixed(2) : 0;
             const totalPoints = Math.floor(totalRevenue / 10);
             const container = document.getElementById('analyticsSummaryGrid');
-            
             container.innerHTML = `
                 <div class="analytics-kpi">
                     <div class="value">R ${totalRevenue.toFixed(2)}</div>
@@ -2424,6 +2367,7 @@
             `;
         }
 
+        // ADDED BY REQUEST: Card Filtering Options
         function applyCardFilters() {
             const searchTerm = document.getElementById('cardSearchInput').value.toLowerCase().trim();
             const tier = document.getElementById('tierFilter').value;
@@ -2456,6 +2400,7 @@
             renderSalesCards(filtered);
         }
 
+        // Auto-apply filters on input change (real-time)
         setTimeout(() => {
             const searchInput = document.getElementById('cardSearchInput');
             const tierSelect = document.getElementById('tierFilter');

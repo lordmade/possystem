@@ -832,20 +832,6 @@
             position: relative;
             z-index: 2;
         }
-        .sale-order-card .loyalty-ribbon {
-            position: absolute;
-            top: 14px;
-            left: -12px;
-            background: linear-gradient(90deg, #D4AF37, #FFD700);
-            color: #000;
-            font-size: 11px;
-            font-weight: 800;
-            padding: 4px 28px 4px 14px;
-            border-radius: 0 30px 30px 0;
-            box-shadow: 3px 3px 12px rgba(0,0,0,0.15);
-            transform: rotate(-8deg);
-            z-index: 3;
-        }
         .sale-order-card .status-badge {
             background: #E3FCEF;
             color: #00B894;
@@ -2103,14 +2089,12 @@
             dataToRender.forEach((sale, index) => {
                 const date = new Date(sale.timestamp);
                 const orderNum = `#ORD-${String(10000 + index)}`;
-                const tier = index % 4 === 0 ? 'Gold' : index % 3 === 0 ? 'Silver' : 'Bronze';
                 const pointsEarned = Math.floor(parseFloat(sale.revenue) / 10);
                 const card = document.createElement('div');
                 card.className = 'sale-order-card';
                 card.style.animationDelay = `${index * 70}ms`;
                 card.innerHTML = `
                     <div class="top-bar">
-                        <div class="loyalty-ribbon">${tier} Tier</div>
                         <div class="order-number">${orderNum}</div>
                         <div class="status-badge">✅ COMPLETED</div>
                     </div>

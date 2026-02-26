@@ -3,1298 +3,455 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraPOS | South Africa Hub</title>
+    <title>AuraPOS | Cashier Terminal</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --primary-grad: linear-gradient(135deg, #FFD700 0%, #FFB800 100%);
+            --primary: #1A1C1E;
+            --secondary: #2C3034;
+            --accent: #FFD700;
+            --success: #00B894;
+            --danger: #FF7675;
+            --bg-light: #F4F6F8;
             --white: #ffffff;
-            --bg-light: #F7F9FC;
-            --dark-text: #1A1C1E;
-            --muted-text: #6C757D;
-            --card-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --text-dark: #1A1C1E;
+            --text-muted: #6C757D;
+            --border: #E9ECEF;
+            --transition: all 0.2s ease;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        html { font-size: 16px; }
-        body {
-            background-color: var(--bg-light);
-            color: var(--dark-text);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; user-select: none; }
+        body { display: flex; height: 100vh; background-color: var(--bg-light); color: var(--text-dark); overflow: hidden; }
+       
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary); z-index: 5000; display: flex;
+            justify-content: center; align-items: center; color: white;
         }
-        /* Sidebar Navigation */
-        sidebar {
-            width: 280px;
-            min-width: 280px;
-            background: var(--white);
-            border-right: 1px solid rgba(0,0,0,0.05);
-            padding: 40px 30px;
-            position: fixed;
-            height: 100vh;
+        .login-card { background: var(--secondary); padding: 40px; border-radius: 20px; width: 350px; text-align: center; }
+        .login-card input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: none; font-size: 16px; outline: none; }
+        
+        /* Pill-shaped buttons */
+        .btn-login,
+        .nav-btn,
+        .cat-btn,
+        .clear-btn,
+        .pay-btn,
+        .btn-cash,
+        .btn-confirm,
+        .btn-cancel,
+        .btn-complete,
+        .btn-modal {
+            border-radius: 9999px;
+            padding: 12px 24px;
+            font-weight: 700;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            color: #000;
+            font-weight: 800;
+            margin-top: 10px;
+        }
+        .btn-login:hover {
+            background: #ffc107;
+            transform: scale(1.02);
+        }
+        .sidebar-nav {
+            width: 80px;
+            background: var(--primary);
             display: flex;
             flex-direction: column;
-            z-index: 100;
-            animation: slideInLeft 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-            overflow-y: auto;
-        }
-        .logo-container {
-            display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 50px;
-            animation: fadeInDown 0.8s ease;
+            padding: 24px 0 16px;
+            height: 100vh;
         }
         .logo-sq {
-            width: 45px;
-            height: 45px;
-            min-width: 45px;
-            background: var(--primary-grad);
+            width: 54px;
+            height: 54px;
+            background: var(--accent);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 22px;
+            font-size: 26px;
             color: #000;
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-        .logo-sq:hover { transform: rotate(10deg) scale(1.1); }
-        .logo-text { font-size: 24px; font-weight: 800; letter-spacing: -1px; white-space: nowrap; }
-        /* Sidebar Nav Items & Animations */
-        .nav-item {
-            padding: 14px 20px;
-            margin-bottom: 10px;
-            border-radius: 16px;
-            font-weight: 600;
-            color: var(--muted-text);
-            cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            transform-origin: left center;
-            white-space: nowrap;
-        }
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.03);
-            z-index: -1;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            border-radius: 16px;
-        }
-        .nav-item:hover {
-            color: var(--dark-text);
-            transform: translateX(6px) scale(1.02);
-        }
-        .nav-item:hover::before {
-            transform: scaleX(1);
-        }
-        .nav-item.active {
-            color: #000;
-            background: var(--primary-grad);
-            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.25);
-            transform: scale(1.02);
-            font-weight: 800;
-            animation: pulse 2s infinite;
-        }
-        .nav-item.active::before {
-            display: none;
-        }
-        .nav-item:active {
-            transform: scale(0.98);
-        }
-        /* Main Dashboard & Views */
-        main {
-            margin-left: 280px;
-            padding: clamp(20px, 4vw, 50px);
-            width: calc(100% - 280px);
-            min-width: 0;
-            animation: fadeIn 1s ease;
-        }
-        .view {
-            display: none;
-            animation: fadeIn 0.6s ease forwards;
-        }
-        .view.active {
-            display: block;
-        }
-        .header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
-            animation: slideInDown 0.5s ease;
         }
-   
-        .greeting { flex: 1; min-width: 250px; }
-        .greeting h1 {
-            font-size: clamp(24px, 3vw, 32px);
-            font-weight: 800;
-        }
-   
-        .header-flex > div:last-child { text-align: right; min-width: 150px; }
-   
-        .status-pill {
-            background: #E3FCEF;
-            color: #00B894;
-            padding: 6px 16px;
-            border-radius: 50px;
-            font-size: 13px;
+        .nav-btn {
+            width: 68px;
+            height: 68px;
+            border-radius: 9999px;
+            background: transparent;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 10px;
             font-weight: 600;
-            animation: pulse 2s infinite;
-            white-space: nowrap;
+            padding: 8px 4px;
         }
-        /* Modern Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: minmax(300px, 350px) 1fr;
-            gap: clamp(20px, 3vw, 30px);
+        .nav-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
         }
-        .card {
+        .nav-btn.active {
+            background: var(--secondary);
+            color: var(--accent);
+        }
+        .nav-btn.logout {
+            margin-top: auto;
+            color: var(--danger);
+        }
+        .view-section { display: none; flex: 1; height: 100vh; }
+        .view-section.active { display: flex; }
+        .pos-menu-area { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow-y: auto; }
+        .header-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; }
+       
+        .category-scroll { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 10px; }
+        .category-scroll::-webkit-scrollbar { height: 4px; }
+        .category-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .cat-btn {
+            padding: 10px 24px;
+            border: 1px solid var(--border);
             background: var(--white);
-            padding: clamp(20px, 3vw, 30px);
-            border-radius: 24px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            transition: var(--transition);
-            animation: slideInUp 0.5s ease;
-            width: 100%;
-            min-width: 0;
-        }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
-        h3 {
-            font-size: clamp(16px, 2vw, 18px);
-            margin-bottom: 25px;
-            font-weight: 700;
-            opacity: 0.9;
-        }
-        /* Form Inputs */
-        .input-group { margin-bottom: 20px; }
-        label {
-            display: block;
-            font-size: clamp(12px, 1.5vw, 13px);
             font-weight: 600;
-            color: var(--muted-text);
-            margin-bottom: 8px;
         }
-        input, select {
-            width: 100%;
-            padding: clamp(12px, 2vw, 14px) clamp(15px, 2vw, 20px);
-            border-radius: 16px;
-            border: 1.5px solid #F1F3F5;
-            background: #F8F9FA;
+        .cat-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .menu-item { background: var(--white); padding: 12px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); text-align: center; cursor: pointer; transition: var(--transition); border: 2px solid transparent; }
+        .menu-item:active { transform: scale(0.95); border-color: var(--accent); }
+        .menu-item img { width: 100%; height: 100px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+        .menu-item h4 { font-size: 14px; margin-bottom: 5px; }
+        .menu-item p { color: var(--success); font-weight: 800; }
+        .pos-cart-area { width: 350px; background: var(--white); border-left: 1px solid var(--border); display: flex; flex-direction: column; height: 100vh; box-shadow: -5px 0 20px rgba(0,0,0,0.03); }
+        .cart-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .cart-header h2 { font-size: 18px; }
+        .clear-btn {
+            color: var(--danger);
+            background: none;
             font-weight: 600;
-            transition: var(--transition);
-            color: var(--dark-text);
-            font-size: clamp(14px, 1.5vw, 15px);
-            min-height: 48px;
+            padding: 8px 16px;
         }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #FFD700;
-            background: #fff;
-            box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
-            transform: scale(1.01);
-        }
-        /* Shimmer Pill Button */
-        .btn-pill {
-            position: relative;
-            overflow: hidden;
-            background: var(--primary-grad);
-            border: none;
-            padding: clamp(14px, 2vw, 16px) clamp(20px, 3vw, 30px);
-            border-radius: 50px;
-            color: #000;
+       
+        .cart-items { flex: 1; overflow-y: auto; padding: 20px; list-style: none; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px dashed var(--border); }
+        .cart-item-details { flex: 1; }
+        .cart-item-name { font-weight: 600; font-size: 14px; }
+        .cart-item-price { color: var(--text-muted); font-size: 12px; }
+        .cart-item-qty { display: flex; align-items: center; gap: 10px; background: var(--bg-light); border-radius: 8px; padding: 5px; }
+        .cart-item-qty button { width: 28px; height: 28px; border: none; border-radius: 6px; background: var(--white); cursor: pointer; font-weight: bold; }
+        .cart-totals { padding: 20px; background: var(--bg-light); }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-muted); }
+        .total-row.grand-total { font-size: 24px; font-weight: 800; color: var(--text-dark); margin-top: 10px; padding-top: 10px; border-top: 2px solid #ddd; }
+       
+        .pay-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--success);
+            color: white;
+            font-size: 18px;
             font-weight: 800;
-            font-size: clamp(14px, 1.5vw, 15px);
-            cursor: pointer;
-            width: 100%;
-            transition: var(--transition);
-            box-shadow: 0 10px 20px rgba(255, 215, 0, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            min-height: 48px;
-        }
-        .btn-pill:hover { transform: scale(1.02); box-shadow: 0 15px 25px rgba(255, 215, 0, 0.3); }
-        .btn-pill::after {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(60deg, transparent, rgba(255,255,255,0.4), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 3s infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-150%) rotate(45deg); }
-            100% { transform: translateX(150%) rotate(45deg); }
-        }
-        /* Inventory Table */
-        .table-container {
-            overflow-x: auto;
-            width: 100%;
-        }
-        .table-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
         }
-        .search-bar {
+        .pay-btn:active { transform: scale(0.98); }
+        .pay-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .orders-area { flex: 1; padding: 30px; overflow-y: auto; background: var(--bg-light); }
+        .search-container { margin-bottom: 20px; }
+        #searchOrders {
             width: 100%;
-            max-width: 250px;
-            padding: 10px 15px;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid var(--border);
             border-radius: 12px;
-        }
-        table {
-            width: 100%;
-            min-width: 600px;
-            border-collapse: separate;
-            border-spacing: 0 12px;
-        }
-        th {
-            text-align: left;
-            padding: 0 clamp(10px, 2vw, 20px);
-            color: var(--muted-text);
-            font-size: clamp(11px, 1.2vw, 13px);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-   
-        tr.category-row td {
-            padding: 10px clamp(10px, 2vw, 20px);
-            font-weight: 800;
-            color: var(--muted-text);
-            background: #fdfdfd;
-            font-size: clamp(11px, 1.2vw, 12px);
-            text-transform: uppercase;
-            animation: fadeIn 0.3s ease;
-        }
-   
-        tr.item-row {
             background: var(--white);
-            transition: var(--transition);
-            cursor: default;
-            animation: slideInRight 0.4s ease;
         }
-        tr.item-row td {
-            padding: clamp(15px, 2vw, 20px) clamp(10px, 2vw, 20px);
-            border-top: 1px solid #F1F3F5;
-            border-bottom: 1px solid #F1F3F5;
-            font-size: clamp(13px, 1.5vw, 14px);
-        }
-        tr.item-row td:first-child {
-            border-left: 1px solid #F1F3F5;
-            border-top-left-radius: 16px;
-            border-bottom-left-radius: 16px;
-        }
-        tr.item-row td:last-child {
-            border-right: 1px solid #F1F3F5;
-            border-top-right-radius: 16px;
-            border-bottom-right-radius: 16px;
-        }
-        .price-tag {
-            font-weight: 800;
-            color: var(--dark-text);
-            font-size: clamp(14px, 1.8vw, 16px);
+        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .order-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border-top: 5px solid var(--accent);
             display: flex;
             flex-direction: column;
         }
-        .discount-text {
-            font-size: clamp(10px, 1.2vw, 11px);
-            text-decoration: line-through;
-            color: var(--muted-text);
-        }
-   
-        .stock-badge {
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: clamp(11px, 1.2vw, 12px);
-            font-weight: 700;
-            background: #e9ecef;
-            color: #495057;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        /* Stock Alert Classes */
-        .stock-safe { background: #E3FCEF; color: #00B894; }
-        .stock-low { background: #FFF3CD; color: #856404; animation: pulse 2s infinite; }
-        .stock-out { background: #FFE5E5; color: #D63031; animation: shake 0.5s ease-in-out; }
-        .btn-edit, .btn-delete {
-            padding: clamp(6px, 1vw, 8px) clamp(12px, 2vw, 18px);
-            border-radius: 50px;
-            font-size: clamp(11px, 1.2vw, 12px);
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-right: 6px;
-            border: none;
-            white-space: nowrap;
-        }
-        .btn-edit { background: #0984E3; color: white; }
-        .btn-edit:hover { background: #0770c2; transform: scale(1.05); }
-        .btn-delete { background: #D63031; color: white; }
-        .btn-delete:hover { background: #b52b2b; transform: scale(1.05); }
-        /* Analytics Section */
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: clamp(15px, 2vw, 20px);
-            margin-top: 30px;
-        }
-        .chart-container {
-            position: relative;
-            height: clamp(150px, 25vw, 200px);
-            width: 100%;
-            min-height: 150px;
-        }
-        /* Toast Notification */
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            max-width: 90vw;
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1000;
-            right: 30px;
-            bottom: 30px;
-            font-size: clamp(13px, 1.5vw, 14px);
-            font-weight: 600;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transform: translateY(100px);
-            transition: all 0.3s ease;
-        }
-        #toast.show {
-            visibility: visible;
-            transform: translateY(0);
-            animation: slideInUp 0.5s ease;
-        }
-        /* Animations */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        /* NEW MANAGER FEATURES */
-        .kpi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: clamp(15px, 2vw, 20px);
-            margin-bottom: 35px;
-        }
-        .kpi-card {
-            background: var(--white);
-            padding: clamp(20px, 3vw, 26px) clamp(15px, 2vw, 22px);
-            border-radius: 22px;
-            box-shadow: var(--card-shadow);
-            text-align: center;
-            transition: var(--transition);
-            animation: slideInUp 0.5s ease;
-        }
-        .kpi-card:hover { transform: translateY(-4px) scale(1.02); }
-        .kpi-value {
-            font-size: clamp(24px, 3vw, 29px);
-            font-weight: 800;
-            line-height: 1;
-            margin: 10px 0 6px;
-            transition: all 0.3s ease;
-        }
-        .kpi-card:hover .kpi-value { transform: scale(1.1); }
-        .kpi-label {
-            font-size: clamp(12px, 1.4vw, 13.5px);
-            color: var(--muted-text);
+        .order-card.pending { border-top-color: var(--accent); }
+        .order-card.completed { border-top-color: var(--success); opacity: 0.92; }
+        .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .order-id { font-weight: 800; font-size: 20px; }
+        .order-status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
             font-weight: 600;
         }
-        .kpi-change {
-            font-size: clamp(12px, 1.3vw, 13px);
-            font-weight: 700;
+        .order-status-pending { background: #fff3cd; color: #856404; }
+        .order-status-completed { background: #d4edda; color: #155724; }
+        .order-time { font-size: 13px; color: var(--text-muted); }
+        .order-customer { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
+        .order-items { margin-bottom: 16px; font-size: 14px; color: var(--text-muted); }
+        .order-items li { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .order-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; border-top: 1px solid var(--border); }
+        .order-total { font-size: 18px; font-weight: 800; }
+        .btn-complete {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
         }
-        .change-positive { color: #00B894; }
-        .change-negative { color: #D63031; }
-        .period-toggle {
-            display: inline-flex;
-            background: var(--white);
-            padding: 6px;
-            border-radius: 50px;
-            box-shadow: var(--card-shadow);
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-        .period-btn {
-            padding: clamp(8px, 1.5vw, 10px) clamp(18px, 2.5vw, 26px);
-            border: none;
-            background: transparent;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: clamp(12px, 1.4vw, 14px);
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-        .period-btn.active {
-            background: var(--primary-grad);
-            color: #000;
-            box-shadow: 0 6px 18px rgba(255,215,0,0.25);
-            transform: scale(1.05);
-        }
-        .live-ticker {
-            max-height: clamp(200px, 30vw, 260px);
-            overflow-y: auto;
-            padding: 4px;
-        }
-        .ticker-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: clamp(10px, 2vw, 13px) clamp(12px, 2vw, 18px);
-            background: #f8f9fa;
-            margin-bottom: 8px;
-            border-radius: 14px;
-            font-size: clamp(13px, 1.5vw, 14.5px);
-            transition: all 0.3s ease;
-            animation: slideInRight 0.3s ease;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .ticker-item:hover {
-            transform: translateX(5px);
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-        .low-stock-panel {
-            background: #FFF5F5;
-            border: 2px solid #FFE5E5;
-            animation: pulse 3s infinite;
-        }
-        .alert-item {
-            padding: clamp(12px, 2vw, 15px) clamp(12px, 2vw, 18px);
-            border-bottom: 1px solid #FFE5E5;
-            font-size: clamp(13px, 1.5vw, 14px);
-            transition: all 0.3s ease;
-        }
-        .alert-item:hover {
-            background: rgba(255, 230, 230, 0.5);
-            transform: translateX(5px);
-        }
-        .goal-card {
-            background: var(--white);
-            padding: clamp(20px, 3vw, 26px);
-            border-radius: 22px;
-            box-shadow: var(--card-shadow);
-            text-align: center;
-            transition: var(--transition);
-        }
-        .goal-card:hover { transform: translateY(-3px); }
-        .goal-bar {
-            height: 10px;
-            background: #e9ecef;
-            border-radius: 50px;
-            overflow: hidden;
-            margin: 16px 0;
-        }
-        .goal-progress {
-            height: 100%;
-            background: var(--primary-grad);
-            width: 68%;
-            transition: width 1s ease;
-            animation: shimmer 2s infinite;
-        }
-        /* Edit Modal */
-        #editModal {
+        .btn-complete:hover { background: #000; }
+        /* ── Modals ── */
+        .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
             z-index: 2000;
-            align-items: center;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(26, 28, 30, 0.75);
             justify-content: center;
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease;
-            padding: 20px;
+            align-items: center;
+            backdrop-filter: blur(6px);
         }
         .modal-content {
             background: var(--white);
-            padding: clamp(25px, 4vw, 40px);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 420px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: var(--card-shadow);
-            animation: slideInUp 0.4s ease;
+            width: 420px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            border: 1px solid var(--border);
         }
-        /* Delete Confirmation Modal */
-        #deleteModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            z-index: 2001;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-            animation: fadeIn 0.3s ease;
+        .modal-header {
+            background: var(--primary);
+            color: var(--white);
             padding: 20px;
-        }
-        .delete-modal-content {
-            background: var(--white);
-            padding: clamp(25px, 4vw, 40px);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: var(--card-shadow);
             text-align: center;
-            animation: slideInUp 0.4s ease;
         }
-        .delete-modal-content h3 { color: #D63031; margin-bottom: 15px; }
-        .delete-modal-content p { color: var(--muted-text); margin-bottom: 25px; }
-        .delete-modal-buttons {
+        .modal-header h2 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .modal-body {
+            padding: 32px 28px;
+            text-align: center;
+            background: var(--white);
+        }
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .modal-message {
+            font-size: 18px;
+            margin: 16px 0 28px;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+        .modal-actions {
             display: flex;
             gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
+        }
+        .btn-modal {
+            flex: 1;
+            padding: 14px 24px;
+            font-weight: 700;
+        }
+        .btn-confirm {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-confirm:hover {
+            background: #e65b5a;
         }
         .btn-cancel {
-            background: #e9ecef;
-            color: #333;
-            border: none;
-            padding: clamp(12px, 2vw, 14px) clamp(20px, 3vw, 30px);
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            flex: 1;
-            min-width: 120px;
+            background: var(--bg-light);
+            color: var(--text-dark);
         }
-        .btn-cancel:hover { background: #dee2e6; transform: scale(1.02); }
-        .btn-confirm-delete {
-            background: #D63031;
-            color: white;
-            border: none;
-            padding: clamp(12px, 2vw, 14px) clamp(20px, 3vw, 30px);
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            flex: 1;
-            min-width: 120px;
+        .btn-cancel:hover {
+            background: #e0e4e8;
         }
-        .btn-confirm-delete:hover { background: #b52b2b; transform: scale(1.02); }
-        /* Settings Form */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: clamp(15px, 2vw, 25px);
-        }
-        /* Image preview in edit modal */
-        .image-preview {
-            width: 100%;
-            height: clamp(120px, 20vw, 150px);
-            object-fit: cover;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 2px dashed #ddd;
-        }
-        /* Date Filter Styles - Matching the image */
-        .date-filter-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .date-filter-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #1A1C1E;
-            color: #ffffff;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        .date-filter-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-            background: #2C2E33;
-        }
-        .date-filter-btn svg {
-            width: 18px;
-            height: 18px;
-            stroke: #FFD700;
-        }
-        .date-filter-input {
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-        }
-        /* Responsive Breakpoints */
-        @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        @media (max-width: 768px) {
-            sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 20px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 15px;
-            }
-       
-            sidebar > div:first-of-type {
-                margin-bottom: 0;
-                flex: 1;
-            }
-       
-            sidebar > p {
-                display: none;
-            }
-       
-            sidebar > div:nth-of-type(2) {
-                display: flex;
-                flex-direction: row;
-                gap: 10px;
-                flex-wrap: wrap;
-                width: 100%;
-            }
-       
-            .nav-item {
-                margin-bottom: 0;
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-       
-            .status-pill {
-                margin-top: 0;
-                width: auto;
-            }
-       
-            main {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px;
-            }
-       
-            .header-flex {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-       
-            .header-flex > div:last-child {
-                text-align: left;
-                width: 100%;
-            }
-       
-            .analytics-grid {
-                grid-template-columns: 1fr;
-            }
-            .date-filter-container {
-                width: 100%;
-                justify-content: flex-start;
-            }
-        }
-        @media (max-width: 480px) {
-            .logo-text {
-                font-size: 20px;
-            }
-       
-            .btn-edit, .btn-delete {
-                padding: 6px 12px;
-                font-size: 11px;
-                margin-right: 3px;
-            }
-       
-            tr.item-row td {
-                padding: 12px 8px;
-            }
-       
-            .period-toggle {
-                width: 100%;
-                justify-content: center;
-            }
-       
-            .period-btn {
-                padding: 8px 15px;
-                font-size: 12px;
-            }
-            .date-filter-btn {
-                padding: 10px 14px;
-                font-size: 13px;
-            }
-        }
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-        /* ADDED BY REQUEST: Sales History Log as Animated Cards with Order Number */
-        .sales-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 22px;
-            margin-top: 25px;
-        }
-        .sale-order-card {
-            background: var(--white);
-            border-radius: 24px;
-            padding: 32px 28px 28px;
-            box-shadow: var(--card-shadow);
-            border: 1px solid rgba(255,215,0,0.12);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-            animation: saleCardPop 0.65s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-            opacity: 0;
-            border-top: 7px solid #FFD700;
-            background: linear-gradient(145deg, #ffffff 0%, #fdfaf0 100%);
-            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.12);
-        }
-        .sale-order-card:hover {
-            transform: translateY(-10px) scale(1.015);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.12);
-        }
-        @keyframes saleCardPop {
-            from {
-                opacity: 0;
-                transform: translateY(45px) scale(0.94);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        .sale-order-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 0;
-        }
-        .sale-order-card .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 22px;
-            padding-bottom: 18px;
-            border-bottom: 1px dashed #e8e0c0;
-            position: relative;
-            z-index: 2;
-        }
-        .sale-order-card .status-badge {
-            background: #E3FCEF;
-            color: #00B894;
-            font-size: 11.5px;
+        .quick-cash { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .btn-cash {
+            padding: 15px 20px;
+            border: 1px solid var(--border);
+            background: var(--bg-light);
             font-weight: 800;
-            padding: 4px 14px;
-            border-radius: 50px;
-            letter-spacing: 0.5px;
+            font-size: 16px;
         }
-        .sale-order-card .icon {
-            font-size: 52px;
-            margin: 12px 0 18px;
-            filter: drop-shadow(0 4px 8px rgba(255,215,0,0.3));
-        }
-        .sale-order-card .order-number {
-            font-size: 15px;
-            padding: 8px 22px;
-            top: 26px;
-            box-shadow: 0 8px 20px rgba(255,215,0,0.35);
-        }
-        .sale-order-card .sale-time {
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #6C757D;
-        }
-        .sale-order-card .customer-info {
-            font-size: 15.5px;
-            font-weight: 700;
-            margin: 18px 0 12px;
-            color: #1A1C1E;
-        }
-        .sale-order-card .product-name {
-            font-size: 20px;
-            margin-bottom: 20px;
-            line-height: 1.25;
-        }
-        .sale-order-card .revenue {
-            font-size: 34px;
-            font-weight: 800;
-            background: var(--primary-grad);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-        }
-        .sale-order-card .points-earned {
-            background: #FFF8E1;
-            color: #D4AF37;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 6px 16px;
-            border-radius: 50px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .sale-order-card .payment-info {
-            margin-top: 22px;
-            font-size: 13.5px;
-            color: #6C757D;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-        }
-        /* Advanced Sales Analytics Section */
-        .advanced-analytics {
-            background: #fff;
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 30px;
-            box-shadow: var(--card-shadow);
-        }
-        .analytics-summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 18px;
-        }
-        .analytics-kpi {
-            text-align: center;
-            padding: 18px;
-            background: #faf9f4;
-            border-radius: 18px;
-        }
-        .analytics-kpi .value {
-            font-size: 26px;
-            font-weight: 800;
-            color: #1A1C1E;
-        }
-        .analytics-kpi .label {
-            font-size: 13px;
-            color: #6C757D;
-            margin-top: 6px;
-        }
-        /* ADDED BY REQUEST: Card Filtering Options */
-        .sales-filter-bar {
-            display: flex;
-            gap: 12px;
-            margin: 25px 0 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .sales-filter-bar input,
-        .sales-filter-bar select {
-            padding: 12px 16px;
-            border-radius: 16px;
-            border: 1.5px solid #F1F3F5;
-            background: #F8F9FA;
-            font-size: 14px;
-            min-width: 180px;
-        }
-        .sales-filter-bar button {
-            background: var(--primary-grad);
-            color: #000;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .sales-filter-bar button:hover {
-            transform: scale(1.05);
+        .btn-cash:active { background: var(--accent); border-color: var(--accent); }
+       
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; }
+        .tender-input { width: 100%; padding: 15px; font-size: 24px; font-weight: 800; border: 2px solid var(--border); border-radius: 10px; text-align: right; outline: none; }
+        .tender-input:focus { border-color: var(--accent); }
+       
+        .change-display { background: #e8f5e9; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; }
+        .change-display span { display: block; font-size: 14px; color: var(--success); font-weight: 600; }
+        .change-display h3 { font-size: 32px; color: var(--success); font-weight: 800; }
+       
+        .success-icon { font-size: 50px; color: var(--success); margin-bottom: 10px; }
+        .order-number-display { font-size: 40px; font-weight: 800; color: var(--primary); margin: 15px 0; letter-spacing: 2px; }
+        @media print {
+            body * { visibility: hidden; }
+            #receipt-print, #receipt-print * { visibility: visible; }
+            #receipt-print { position: absolute; left: 0; top: 0; width: 80mm; padding: 10px; color: black !important; }
         }
     </style>
 </head>
 <body>
-    <sidebar>
-        <div class="logo-container">
-            <div class="logo-sq">A</div>
-            <div class="logo-text">AuraPOS</div>
+    <div id="loginOverlay">
+        <div class="login-card">
+            <h2 style="margin-bottom: 20px; color: var(--accent);">AuraPOS Login</h2>
+            <input type="text" id="cashierID" placeholder="Employee ID" onkeypress="if(event.key==='Enter') handleLogin()">
+            <button class="btn-login" onclick="handleLogin()">Enter System</button>
         </div>
-        <p style="font-size: 12px; font-weight: 700; color: #ADB5BD; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;">Main Menu</p>
-        <div style="flex-grow: 1;">
-            <div class="nav-item active" data-target="view-dashboard">Dashboard</div>
-            <div class="nav-item" data-target="view-sales">Sales History</div>
-            <div class="nav-item" data-target="view-employees">👥 Employees</div>
-            <div class="nav-item" data-target="view-settings">Settings</div>
-        </div>
-        <div class="status-pill">● System Online</div>
-    </sidebar>
-    <main>
-        <div class="header-flex">
-            <div class="greeting">
-                <h1 id="page-title">Store Operations</h1>
-                <p id="page-subtitle" style="color: var(--muted-text);">Manage your inventory and sales in South Africa.</p>
+    </div>
+
+    <!-- Access Denied Modal -->
+    <div id="accessDeniedModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--danger);">
+                <h2>🔒 Access Denied</h2>
             </div>
-            <div style="text-align: right;">
-                <p id="clock" style="font-weight: 800; font-size: 18px;"></p>
-                <p style="color: var(--muted-text); font-size: 14px;">Pretoria, ZA</p>
-            </div>
-        </div>
-        <div id="view-dashboard" class="view active">
-            <!-- NEW MANAGER FEATURES START -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px; flex-wrap: wrap; gap: 15px;">
-                <div class="period-toggle">
-                    <button class="period-btn active" data-period="today">Today</button>
-                    <button class="period-btn" data-period="week">This Week</button>
-                    <button class="period-btn" data-period="month">This Month</button>
+            <div class="modal-body">
+                <div class="modal-icon">✖</div>
+                <p class="modal-message" id="accessDeniedMessage">The Employee ID you entered is not registered in the system. Please contact your manager.</p>
+                <div class="modal-actions">
+                    <button class="btn-modal btn-confirm" onclick="closeAccessDeniedModal()" style="width: 100%;">Try Again</button>
                 </div>
-                <button class="btn-pill" id="endOfDayBtn" style="width:auto;padding:14px 32px;font-size:15px;">
-                    📋 End of Day Report (PDF)
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Message / Logout Confirmation Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+            </div>
+            <div class="modal-body">
+                <div id="modalIcon" class="modal-icon"></div>
+                <p class="modal-message" id="modalMessage"></p>
+                <div class="modal-actions">
+                    <button class="btn-modal btn-cancel" onclick="closeMessageModal()">Cancel</button>
+                    <button class="btn-modal btn-confirm" id="confirmLogoutBtn" style="display:none;">Exit</button>
+                    <button class="btn-modal btn-confirm" onclick="closeMessageModal()" id="okOnlyBtn" style="background: var(--success);">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="logo-sq">A</div>
+        <button class="nav-btn active" onclick="switchTab('pos')">
+            <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            POS
+        </button>
+        <button class="nav-btn" onclick="switchTab('orders')">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            Orders
+        </button>
+        <button class="nav-btn logout" onclick="handleLogout()">
+            <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+            Logout
+        </button>
+    </nav>
+    <main id="view-pos" class="view-section active">
+        <div class="pos-menu-area">
+            <h1 class="header-title">Cashier Terminal (<span id="activeCashierName">...</span>)</h1>
+            <div class="category-scroll" id="posCategories"></div>
+            <div class="menu-grid" id="posMenuGrid"></div>
+        </div>
+       
+        <aside class="pos-cart-area">
+            <div class="cart-header">
+                <h2>Current Order</h2>
+                <button class="clear-btn" onclick="clearCart()">Clear</button>
+            </div>
+            <ul class="cart-items" id="posCartList"></ul>
+            <div class="cart-totals">
+                <div class="total-row"><span>Subtotal</span><span>R <span id="cartSubtotal">0.00</span></span></div>
+                <div class="total-row"><span>VAT (15% Incl)</span><span>R <span id="cartVat">0.00</span></span></div>
+                <div class="total-row grand-total"><span>Total</span><span>R <span id="cartGrandTotal">0.00</span></span></div>
+                <button class="pay-btn" id="btnOpenTender" disabled>
+                    <span>Charge</span>
+                    <span id="btnChargeAmount">R 0.00</span>
                 </button>
             </div>
-            <div class="kpi-grid" id="kpiGrid"></div>
-            <div class="goal-card" style="margin-bottom:30px;">
-                <h3 style="margin-bottom:8px;">Monthly Revenue Goal</h3>
-                <div style="font-size:15px;color:var(--muted-text);">R25,000 target • <span id="goalPercent" style="color:#00B894;font-weight:800;">68%</span> achieved</div>
-                <div class="goal-bar"><div class="goal-progress"></div></div>
-                <div style="font-size:13px;color:#00B894;font-weight:700;">On track – R17,000 so far this month</div>
+        </aside>
+    </main>
+    <main id="view-orders" class="view-section">
+        <div class="orders-area">
+            <h1 class="header-title">Live Order Queue</h1>
+            <div class="search-container">
+                <input type="text" id="searchOrders" placeholder="Search by name, phone, or order number..." oninput="filterOrders(this.value)">
             </div>
-            <div class="card" style="margin-bottom:30px;">
-                <div class="table-header">
-                    <h3>Live Sales Ticker</h3>
-                    <div class="date-filter-container">
-                        <button class="date-filter-btn" id="tickerDateFilterBtn">
-                            <span id="tickerDateDisplay">20/02/2026</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                            </svg>
-                        </button>
-                        <input type="date" id="tickerDateInput" class="date-filter-input">
-                    </div>
-                </div>
-                <div id="liveTicker" class="live-ticker"></div>
-            </div>
-            <div class="card low-stock-panel" style="margin-bottom:30px;">
-                <h3>Low Stock & Alerts <span id="lowStockCount" class="stock-out" style="padding:4px 14px;font-size:13px;margin-left:8px;"></span></h3>
-                <div id="lowStockList"></div>
-            </div>
-            <!-- ORIGINAL DASHBOARD CONTENT (unchanged) -->
-            <div class="dashboard-grid">
-                <div class="card">
-                    <h3>Add New Product</h3>
-                    <div class="input-group">
-                        <label>Product Name</label>
-                        <input type="text" id="itemName" placeholder="e.g. Leather Jacket">
-                    </div>
-                    <div class="input-group">
-                        <label>Category</label>
-                        <select id="itemCategory">
-                            <option value="Uncategorized">Select Category...</option>
-                            <option value="Drinks">Drinks</option>
-                            <option value="Food">Food</option>
-                            <option value="Clothing">Clothing</option>
-                            <option value="Accessories">Accessories</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Price (Rand)</label>
-                        <input type="number" id="itemPrice" placeholder="R 0.00">
-                    </div>
-                    <div class="input-group">
-                        <label>Discount (%) - Optional</label>
-                        <input type="number" id="itemDiscount" placeholder="0">
-                    </div>
-                    <div class="input-group">
-                        <label>Opening Stock</label>
-                        <input type="number" id="itemQty" placeholder="0">
-                    </div>
-                    <div class="input-group">
-                        <label>Product Image (Cloudinary)</label>
-                        <input type="file" id="itemImage" accept="image/*">
-                    </div>
-                    <button class="btn-pill" id="addBtn">
-                        <span>Add to Inventory</span>
-                    </button>
-                </div>
-                <div class="card">
-                    <div class="table-header">
-                        <h3>Live Inventory</h3>
-                        <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Search items...">
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product Details</th>
-                                    <th>Stock Level</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="inventoryBody">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="card" style="margin-top: 30px;">
-                <h3>Basic Analytics</h3>
-                <div class="analytics-grid">
-                    <div>
-                        <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--muted-text);">Stock Value</h4>
-                        <div class="chart-container"><canvas id="stockValueChart"></canvas></div>
-                    </div>
-                    <div>
-                        <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--muted-text);">Top-Selling Items</h4>
-                        <div class="chart-container"><canvas id="topSellingChart"></canvas></div>
-                    </div>
-                    <div>
-                        <h4 style="font-size: 14px; margin-bottom: 10px; color: var(--muted-text);">Sales Over Time</h4>
-                        <div class="chart-container"><canvas id="salesTimeChart"></canvas></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- SALES HISTORY - REAL DATA -->
-        <div id="view-sales" class="view">
-            <div class="card">
-                <div class="table-header">
-                    <h3>Sales History Log</h3>
-                    <div class="date-filter-container">
-                        <button class="date-filter-btn" id="salesDateFilterBtn">
-                            <span id="salesDateDisplay">20/02/2026</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                            </svg>
-                        </button>
-                        <input type="date" id="salesDateInput" class="date-filter-input">
-                    </div>
-                </div>
-                <!-- ADDED BY REQUEST: Card Filtering Options -->
-                <div class="sales-filter-bar">
-                    <input type="text" id="cardSearchInput" placeholder="🔍 Search product name...">
-                    <select id="tierFilter">
-                        <option value="all">All Tiers</option>
-                        <option value="Gold">Gold Tier</option>
-                        <option value="Silver">Silver Tier</option>
-                        <option value="Bronze">Bronze Tier</option>
-                    </select>
-                    <select id="sortFilter">
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                        <option value="high">Highest Revenue</option>
-                        <option value="low">Lowest Revenue</option>
-                    </select>
-                    <button onclick="applyCardFilters()">Apply Filters</button>
-                </div>
-                <!-- ADDED BY REQUEST: Advanced Sales Analytics Section -->
-                <div class="advanced-analytics" id="advancedAnalyticsSection">
-                    <h3 style="margin-bottom:22px;">Advanced Sales Analytics & Loyalty Insights</h3>
-                    <div class="analytics-summary-grid" id="analyticsSummaryGrid">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-                <!-- ADDED BY REQUEST: Animated Cards Container for Sales History Log -->
-                <div id="salesCardsContainer" class="sales-cards-grid"></div>
-            </div>
-        </div>
-        <!-- NEW: EMPLOYEES VIEW -->
-        <div id="view-employees" class="view">
-            <div class="dashboard-grid">
-                <div class="card">
-                    <h3>Register New Employee</h3>
-                    <div class="input-group">
-                        <label>Full Name</label>
-                        <input type="text" id="empName" placeholder="e.g. Thabo Nkosi">
-                    </div>
-                    <div class="input-group">
-                        <label>Position / Role</label>
-                        <select id="empPosition">
-                            <option value="Cashier">Cashier</option>
-                            <option value="Senior Cashier">Senior Cashier</option>
-                            <option value="Store Manager">Store Manager</option>
-                            <option value="Stock Clerk">Stock Clerk</option>
-                            <option value="Sales Assistant">Sales Assistant</option>
-                            <option value="Admin">Administrator</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Phone Number</label>
-                        <input type="tel" id="empPhone" placeholder="+27 82 345 6789">
-                    </div>
-                    <div class="input-group">
-                        <label>Email (Optional)</label>
-                        <input type="email" id="empEmail" placeholder="employee@aurapos.co.za">
-                    </div>
-                    <button class="btn-pill" id="registerEmpBtn">
-                        <span>Register Employee</span>
-                    </button>
-                </div>
-                <div class="card">
-                    <div class="table-header">
-                        <h3>Employee Directory</h3>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Employee ID</th>
-                                    <th>Name</th>
-                                    <th>Role</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
-                                    <th>Registered</th>
-                                </tr>
-                            </thead>
-                            <tbody id="employeesBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- SETTINGS - REAL CONFIGURATIONS -->
-        <div id="view-settings" class="view">
-            <div class="card">
-                <h3>Store Configuration</h3>
-                <div class="settings-grid">
-                    <div class="input-group">
-                        <label>Store Name</label>
-                        <input type="text" id="storeName" placeholder="AuraPOS Pretoria">
-                    </div>
-                    <div class="input-group">
-                        <label>VAT Number</label>
-                        <input type="text" id="vatNumber" placeholder="1234567890123">
-                    </div>
-                    <div class="input-group">
-                        <label>Store Address</label>
-                        <input type="text" id="storeAddress" placeholder="123 Church Street, Pretoria">
-                    </div>
-                    <div class="input-group">
-                        <label>Monthly Revenue Goal (R)</label>
-                        <input type="number" id="monthlyGoal" value="25000">
-                    </div>
-                    <div class="input-group">
-                        <label>Low Stock Alert Threshold</label>
-                        <input type="number" id="lowStockThreshold" value="5">
-                    </div>
-                </div>
-                <button class="btn-pill" id="saveSettingsBtn" style="margin-top:20px;">Save Configuration</button>
-            </div>
+            <div class="orders-grid" id="ordersGrid"></div>
         </div>
     </main>
-    <!-- EDIT MODAL -->
-    <div id="editModal">
+    <div id="tenderModal" class="modal">
         <div class="modal-content">
-            <h3>Edit Product</h3>
-            <img id="editImagePreview" class="image-preview" src="" alt="Product Image" style="display:none;">
-            <div class="input-group">
-                <label>Change Image</label>
-                <input type="file" id="editImage" accept="image/*">
+            <div class="modal-header">
+                <h2>Total: R <span id="tenderTotalDue">0.00</span></h2>
             </div>
-            <div class="input-group">
-                <label>Name</label>
-                <input type="text" id="editName">
-            </div>
-            <div class="input-group">
-                <label>Price</label>
-                <input type="number" id="editPrice">
-            </div>
-            <div class="input-group">
-                <label>Discount %</label>
-                <input type="number" id="editDiscount">
-            </div>
-            <div class="input-group">
-                <label>Stock</label>
-                <input type="number" id="editQty">
-            </div>
-            <div style="display:flex; gap:12px; flex-wrap: wrap;">
-                <button class="btn-pill" id="saveEditBtn" style="flex:1; min-width: 120px;">Save Changes</button>
-                <button class="btn-pill" id="cancelEditBtn" style="flex:1; min-width: 120px; background:#e9ecef;color:#333;">Cancel</button>
+            <div class="modal-body">
+                <div class="quick-cash">
+                    <button class="btn-cash" onclick="setTender('exact')">Exact Amount</button>
+                    <button class="btn-cash" onclick="addTender(50)">+ R 50</button>
+                    <button class="btn-cash" onclick="addTender(100)">+ R 100</button>
+                    <button class="btn-cash" onclick="addTender(200)">+ R 200</button>
+                </div>
+                <div class="input-group">
+                    <label>Amount Received (R)</label>
+                    <input type="number" id="tenderInput" class="tender-input" placeholder="0.00" oninput="calculateChange()">
+                </div>
+                <div class="change-display">
+                    <span>Change Due</span>
+                    <h3>R <span id="changeDue">0.00</span></h3>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" onclick="closeTenderModal()">Cancel</button>
+                    <button class="btn-confirm" id="btnConfirmPayment" disabled onclick="processCashierOrder()">Complete Order</button>
+                </div>
             </div>
         </div>
     </div>
-    <!-- DELETE CONFIRMATION MODAL -->
-    <div id="deleteModal">
-        <div class="delete-modal-content">
-            <h3>⚠️ Delete Product</h3>
-            <p>Are you sure you want to delete <strong id="deleteItemName"></strong>? This action cannot be undone.</p>
-            <div class="delete-modal-buttons">
-                <button class="btn-cancel" id="cancelDeleteBtn">Cancel</button>
-                <button class="btn-confirm-delete" id="confirmDeleteBtn">Delete</button>
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--success);">
+                <h2>Order Completed</h2>
+            </div>
+            <div class="modal-body" style="padding: 40px 20px;">
+                <div class="success-icon">✔</div>
+                <h2 style="font-weight: 800; color: var(--success);">Success!</h2>
+                <p style="color: var(--text-muted); margin-top: 10px;">Order Number</p>
+                <div class="order-number-display" id="successOrderNumber">0000</div>
+                <div class="modal-actions" style="margin-top: 30px; flex-direction: column; gap: 12px;">
+                    <button class="btn-modal btn-confirm" onclick="triggerReceiptPrint()" style="width: 100%; background: var(--primary); color: white;">Print Receipt</button>
+                    <button class="btn-modal btn-cancel" onclick="closeSuccessModal()" style="width: 100%;">Done & New Sale</button>
+                </div>
             </div>
         </div>
     </div>
-    <div id="toast">Stock Alert Notification</div>
+    <div id="receipt-print" style="display:none; font-family: monospace; font-size: 12px; text-align: center;"></div>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-        // 0. Tab Switching Logic (unchanged)
-        const navItems = document.querySelectorAll('.nav-item');
-        const views = document.querySelectorAll('.view');
-        const pageTitle = document.getElementById('page-title');
-        const pageSubtitle = document.getElementById('page-subtitle');
-        const pageHeaders = {
-            'view-dashboard': { title: 'Store Operations', subtitle: 'Manage your inventory and sales in South Africa.' },
-            'view-sales': { title: 'Sales History', subtitle: 'Review your past transactions and revenue logs.' },
-            'view-employees': { title: 'Employee Management', subtitle: 'Register staff and generate unique IDs.' },
-            'view-settings': { title: 'Settings', subtitle: 'Manage your store configurations and preferences.' }
-        };
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-           
-                const targetId = item.getAttribute('data-target');
-                views.forEach(view => view.classList.remove('active'));
-                document.getElementById(targetId).classList.add('active');
-                pageTitle.innerText = pageHeaders[targetId].title;
-                pageSubtitle.innerText = pageHeaders[targetId].subtitle;
-            });
-        });
-        // Firebase Config (unchanged)
+        import { getDatabase, ref, onValue, push, update, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+       
         const firebaseConfig = {
             apiKey: "AIzaSyAxBT0oESoL62oz_x_Z8cMtdENWZPx4tMI",
             authDomain: "pinotp-d7ef5.firebaseapp.com",
@@ -1308,1017 +465,427 @@
         const db = getDatabase(app);
         const inventoryRef = ref(db, 'inventory');
         const salesRef = ref(db, 'sales');
-        const settingsRef = ref(db, 'settings');
-        const employeesRef = ref(db, 'employee'); // NEW - completely separate path
-        let employeesData = {};
-        // Chart Instances (unchanged)
-        let stockChart, topChart, timeChart;
-        // Clock (unchanged)
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString('en-ZA');
-        }, 1000);
-        // ==================== CLOUDINARY CONFIG - REPLACE WITH YOURS ====================
-        const CLOUD_NAME = "dv5bsbydu"; // ← CHANGE THIS
-        const UPLOAD_PRESET = "admin_tlaka"; // ← CHANGE THIS (create unsigned preset in Cloudinary dashboard)
-        async function uploadToCloudinary(file) {
-            if (!file) return null;
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("upload_preset", UPLOAD_PRESET);
-            const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-                method: "POST",
-                body: formData
-            });
-            const data = await response.json();
-            return data.secure_url;
+        const employeesRef = ref(db, 'employee');
+        let inventoryData = {};
+        let cart = {};
+        let selectedCategory = '';
+        let currentTotal = 0;
+        let allSales = {};
+        let currentCashier = { name: '', id: '' };
+        let lastOrderDetails = null;
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // LOGIN VALIDATION FUNCTIONS
+        // ════════════════════════════════════════════════════════════════════════════════
+
+        function showAccessDeniedModal(empID) {
+            const message = `Incorrect Employee ID entered. The ID "${empID}" is not registered in the system. Please contact your manager to create this account.`;
+            document.getElementById('accessDeniedMessage').textContent = message;
+            document.getElementById('accessDeniedModal').style.display = 'flex';
         }
-        // ================================================================================
-        // Add Item (enhanced with image) - UNCHANGED
-        document.getElementById('addBtn').addEventListener('click', async () => {
-            const name = document.getElementById('itemName').value.trim();
-            const category = document.getElementById('itemCategory').value;
-            const price = document.getElementById('itemPrice').value;
-            const discount = document.getElementById('itemDiscount').value || 0;
-            const qty = document.getElementById('itemQty').value;
-            const file = document.getElementById('itemImage').files[0];
-            if (!name || !price || !qty) return;
-            let imageURL = null;
-            if (file) {
-                imageURL = await uploadToCloudinary(file);
-            }
-            push(inventoryRef, {
-                name: name,
-                category: category !== 'Uncategorized' ? category : 'General',
-                price: parseFloat(price).toFixed(2),
-                discount: parseFloat(discount),
-                qty: parseInt(qty),
-                imageURL: imageURL
-            }).then(() => {
-                // Clear form
-                document.getElementById('itemName').value = '';
-                document.getElementById('itemCategory').value = 'Uncategorized';
-                document.getElementById('itemPrice').value = '';
-                document.getElementById('itemDiscount').value = '';
-                document.getElementById('itemQty').value = '';
-                document.getElementById('itemImage').value = '';
-                showToast(`Added ${name} to inventory!`);
-            });
-        });
-        // Inventory Sync (unchanged) ...
-        onValue(inventoryRef, (snapshot) => {
-            const data = snapshot.val();
-            const tableBody = document.getElementById('inventoryBody');
-            tableBody.innerHTML = '';
-            const stockLabels = [];
-            const stockValues = [];
-            const topSellingLabels = [];
-            const topSellingData = [];
-            if (data) {
-                const groupedItems = {};
-                Object.keys(data).forEach(key => {
-                    const item = data[key];
-                    const cat = item.category || 'General';
-                    if (!groupedItems[cat]) groupedItems[cat] = [];
-                    groupedItems[cat].push({ key, ...item });
-                    stockLabels.push(item.name);
-                    const finalPrice = item.price - (item.price * (item.discount || 0) / 100);
-                    stockValues.push(item.qty * finalPrice);
-               
-                    // For top selling chart
-                    topSellingLabels.push(item.name);
-                    topSellingData.push(item.qty > 0 ? 100 - item.qty : 0); // Higher sales = lower stock
-                });
-                Object.keys(groupedItems).forEach(cat => {
-                    const catRow = document.createElement('tr');
-                    catRow.className = 'category-row';
-                    catRow.innerHTML = `<td colspan="4">${cat}</td>`;
-                    tableBody.appendChild(catRow);
-                    groupedItems[cat].forEach(item => {
-                        const row = document.createElement('tr');
-                        row.className = 'item-row';
-                        row.setAttribute('data-name', item.name.toLowerCase());
-                        const hasDiscount = item.discount > 0;
-                        const finalPrice = hasDiscount
-                            ? (item.price - (item.price * item.discount / 100)).toFixed(2)
-                            : parseFloat(item.price).toFixed(2);
-                   
-                        const priceDisplay = hasDiscount
-                            ? `<span class="discount-text">R ${item.price} (-${item.discount}%)</span><span>R ${finalPrice}</span>`
-                            : `<span>R ${finalPrice}</span>`;
-                        let badgeClass = 'stock-safe';
-                        if (item.qty <= 0) badgeClass = 'stock-out';
-                        else if (item.qty <= 5) badgeClass = 'stock-low';
-                        const imgHTML = item.imageURL
-                            ? `<img src="${item.imageURL}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;margin-right:12px;vertical-align:middle;">`
-                            : '';
-                        row.innerHTML = `
-                            <td>${imgHTML}<strong style="font-size:15px">${item.name}</strong></td>
-                            <td><span class="stock-badge ${badgeClass}">${item.qty} units</span></td>
-                            <td class="price-tag">${priceDisplay}</td>
-                            <td>
-                                <button class="btn-edit" data-id="${item.key}">Edit</button>
-                                <button class="btn-delete" data-id="${item.key}" data-name="${item.name}">Delete</button>
-                            </td>
-                        `;
-                        row.querySelector('.btn-edit').onclick = () => openEditModal(item.key, item);
-                        row.querySelector('.btn-delete').onclick = () => openDeleteModal(item.key, item.name);
-                        tableBody.appendChild(row);
-                    });
-                });
-            } else {
-                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#999; padding:40px;">No inventory found. Add your first product.</td></tr>';
-            }
-            updateStockChart(stockLabels, stockValues);
-            updateTopChart(topSellingLabels, topSellingData);
-            filterTable();
-        });
-        // Date Filter Logic (unchanged)
-        let tickerFilterDate = new Date();
-        let salesFilterDate = new Date();
-        let allSalesData = [];
-        function formatDateToDisplay(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-        function formatDateToInput(date) {
-            return date.toISOString().split('T')[0];
-        }
-        function isSameDay(date1, date2) {
-            return date1.getDate() === date2.getDate() &&
-                   date1.getMonth() === date2.getMonth() &&
-                   date1.getFullYear() === date2.getFullYear();
-        }
-        // Ticker Date Filter (unchanged) ...
-        const tickerDateInput = document.getElementById('tickerDateInput');
-        const tickerDateDisplay = document.getElementById('tickerDateDisplay');
-        const tickerDateFilterBtn = document.getElementById('tickerDateFilterBtn');
-        tickerDateDisplay.textContent = formatDateToDisplay(tickerFilterDate);
-        tickerDateInput.value = formatDateToInput(tickerFilterDate);
-        tickerDateFilterBtn.addEventListener('click', () => {
-            tickerDateInput.showPicker();
-        });
-        tickerDateInput.addEventListener('change', (e) => {
-            if (e.target.value) {
-                tickerFilterDate = new Date(e.target.value);
-                tickerDateDisplay.textContent = formatDateToDisplay(tickerFilterDate);
-                updateLiveTicker();
-            }
-        });
-        // Sales History Date Filter (unchanged) ...
-        const salesDateInput = document.getElementById('salesDateInput');
-        const salesDateDisplay = document.getElementById('salesDateDisplay');
-        const salesDateFilterBtn = document.getElementById('salesDateFilterBtn');
-        salesDateDisplay.textContent = formatDateToDisplay(salesFilterDate);
-        salesDateInput.value = formatDateToInput(salesFilterDate);
-        salesDateFilterBtn.addEventListener('click', () => {
-            salesDateInput.showPicker();
-        });
-        salesDateInput.addEventListener('change', (e) => {
-            if (e.target.value) {
-                salesFilterDate = new Date(e.target.value);
-                salesDateDisplay.textContent = formatDateToDisplay(salesFilterDate);
-                updateSalesHistory();
-            }
-        });
-        // Sales History - REAL DATA with Date Filter (unchanged)
-        function updateSalesHistory() {
-            // Table removed - sales shown as cards only
-        }
-        onValue(salesRef, (snapshot) => {
-            const data = snapshot.val();
-            allSalesData = data ? Object.entries(data).map(([id, sale]) => ({ id, ...sale }))
-                .sort((a, b) => b.timestamp - a.timestamp) : [];
-       
-            updateSalesHistory();
-       
-            // Also update manager features
-            allSales = allSalesData;
-            updateLiveTicker();
-            updateKPICards();
-            updateTimeChartFromSales(allSales); // Update sales over time chart
-        });
-        // Edit Modal with Image Support (unchanged) ...
-        let currentEditKey = null;
-        let currentImageURL = null;
-   
-        function openEditModal(key, item) {
-            currentEditKey = key;
-            currentImageURL = item.imageURL;
-       
-            document.getElementById('editName').value = item.name;
-            document.getElementById('editPrice').value = item.price;
-            document.getElementById('editDiscount').value = item.discount || 0;
-            document.getElementById('editQty').value = item.qty;
-       
-            // Show current image if exists
-            const imgPreview = document.getElementById('editImagePreview');
-            if (item.imageURL) {
-                imgPreview.src = item.imageURL;
-                imgPreview.style.display = 'block';
-            } else {
-                imgPreview.style.display = 'none';
-            }
-       
-            document.getElementById('editModal').style.display = 'flex';
-        }
-        document.getElementById('saveEditBtn').addEventListener('click', async () => {
-            if (!currentEditKey) return;
-       
-            const file = document.getElementById('editImage').files[0];
-            let newImageURL = currentImageURL;
-       
-            if (file) {
-                newImageURL = await uploadToCloudinary(file);
-            }
-       
-            const updates = {
-                name: document.getElementById('editName').value,
-                price: parseFloat(document.getElementById('editPrice').value).toFixed(2),
-                discount: parseFloat(document.getElementById('editDiscount').value),
-                qty: parseInt(document.getElementById('editQty').value),
-                imageURL: newImageURL
-            };
-       
-            update(ref(db, `inventory/${currentEditKey}`), updates).then(() => {
-                document.getElementById('editModal').style.display = 'none';
-                document.getElementById('editImage').value = '';
-                showToast('Product updated successfully');
-            });
-        });
-        document.getElementById('cancelEditBtn').addEventListener('click', () => {
-            document.getElementById('editModal').style.display = 'none';
-            document.getElementById('editImage').value = '';
-        });
-        // Delete Confirmation Modal (unchanged) ...
-        let itemToDeleteKey = null;
-        let itemToDeleteName = null;
-        function openDeleteModal(key, name) {
-            itemToDeleteKey = key;
-            itemToDeleteName = name;
-            document.getElementById('deleteItemName').textContent = name;
-            document.getElementById('deleteModal').style.display = 'flex';
-        }
-        document.getElementById('cancelDeleteBtn').addEventListener('click', () => {
-            document.getElementById('deleteModal').style.display = 'none';
-            itemToDeleteKey = null;
-            itemToDeleteName = null;
-        });
-        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
-            if (itemToDeleteKey) {
-                remove(ref(db, `inventory/${itemToDeleteKey}`)).then(() => {
-                    showToast(`${itemToDeleteName} deleted`);
-                    document.getElementById('deleteModal').style.display = 'none';
-                    itemToDeleteKey = null;
-                    itemToDeleteName = null;
-                });
-            }
-        });
-        // Search (unchanged)
-        document.getElementById('searchInput').addEventListener('input', filterTable);
-        function filterTable() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('.item-row');
-            rows.forEach(row => {
-                const name = row.getAttribute('data-name');
-                row.style.display = name.includes(query) ? '' : 'none';
-            });
-        }
-        // Toast (unchanged)
-        function showToast(message) {
-            const toast = document.getElementById("toast");
-            toast.innerHTML = message;
-            toast.className = "show";
-            setTimeout(() => { toast.className = ""; }, 3000);
-        }
-        // Charts (unchanged) ...
-        Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-        const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } };
-        function updateStockChart(labels, data) {
-            const ctx = document.getElementById('stockValueChart').getContext('2d');
-            if (stockChart) stockChart.destroy();
-            stockChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: labels, datasets: [{ data: data, backgroundColor: '#FFD700', borderRadius: 6 }] },
-                options: chartOptions
-            });
-        }
-        function updateTopChart(labels, data) {
-            const ctx = document.getElementById('topSellingChart').getContext('2d');
-            if (topChart) topChart.destroy();
-            topChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: ['#FFD700', '#00B894', '#0984E3', '#6C5CE7', '#FF7675', '#FDCB6E', '#E17055', '#74B9FF'],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'right',
-                            labels: {
-                                boxWidth: 12,
-                                font: { size: 10 }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        // NEW: Sales Over Time Chart Function (unchanged)
-        function updateTimeChartFromSales(salesData) {
-            const ctx = document.getElementById('salesTimeChart').getContext('2d');
-       
-            // Group sales by date
-            const salesByDate = {};
-       
-            if (salesData && salesData.length > 0) {
-                salesData.forEach(sale => {
-                    const date = new Date(sale.timestamp);
-                    const dateKey = date.toLocaleDateString('en-ZA', { day: '2-digit', month: 'short' });
-               
-                    if (!salesByDate[dateKey]) {
-                        salesByDate[dateKey] = 0;
-                    }
-                    salesByDate[dateKey] += parseFloat(sale.revenue || 0);
-                });
-            }
-       
-            // Sort dates chronologically
-            const sortedDates = Object.keys(salesByDate).sort((a, b) => {
-                const dateA = new Date(a + ' 2024');
-                const dateB = new Date(b + ' 2024');
-                return dateA - dateB;
-            });
-       
-            const labels = sortedDates.length > 0 ? sortedDates : ['No Data'];
-            const data = sortedDates.length > 0 ? sortedDates.map(date => salesByDate[date]) : [0];
-       
-            if (timeChart) timeChart.destroy();
-       
-            timeChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Revenue (R)',
-                        data: data,
-                        borderColor: '#1A1C1E',
-                        backgroundColor: 'rgba(255, 215, 0, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#FFD700',
-                        pointBorderColor: '#1A1C1E',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'R ' + context.parsed.y.toFixed(2);
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return 'R ' + value;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        // Manager KPI / Ticker / Low Stock (unchanged) ...
-        let allSales = [];
-        let currentPeriod = 'today';
-        function calculatePeriodStats(period) {
-            const now = Date.now();
-            let startTime = 0;
-            if (period === 'today') {
-                const today = new Date(); today.setHours(0,0,0,0); startTime = today.getTime();
-            } else if (period === 'week') {
-                startTime = now - 7 * 24 * 60 * 60 * 1000;
-            } else {
-                const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0); startTime = monthStart.getTime();
-            }
-            const filtered = allSales.filter(s => s.timestamp >= startTime);
-            const revenue = filtered.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
-            const count = filtered.length;
-            const avg = count > 0 ? (revenue / count).toFixed(0) : 0;
-            return { revenue: revenue.toFixed(0), count, avg };
-        }
-        function updateKPICards() {
-            const stats = calculatePeriodStats(currentPeriod);
-            const yesterdayStats = { revenue: 10500 };
-            const percentChange = stats.revenue > 0 ? Math.round(((stats.revenue - yesterdayStats.revenue) / yesterdayStats.revenue) * 100) : 0;
-            document.getElementById('kpiGrid').innerHTML = `
-                <div class="kpi-card">
-                    <div class="kpi-label">Revenue</div>
-                    <div class="kpi-value">R ${stats.revenue}</div>
-                    <div class="kpi-change ${percentChange >= 0 ? 'change-positive' : 'change-negative'}">
-                        ${percentChange >= 0 ? '↑' : '↓'} ${Math.abs(percentChange)}% vs previous
-                    </div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Transactions</div>
-                    <div class="kpi-value">${stats.count}</div>
-                    <div class="kpi-change">Avg R${stats.avg}</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Avg Basket Size</div>
-                    <div class="kpi-value">2.4</div>
-                    <div class="kpi-change change-positive">↑ 0.3 vs last period</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Gross Profit</div>
-                    <div class="kpi-value">42%</div>
-                    <div class="kpi-change change-positive">after cost price</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Low Stock Items</div>
-                    <div class="kpi-value" id="kpiLowStock">12</div>
-                    <div class="kpi-change">need attention</div>
-                </div>
-            `;
-        }
-        function updateLiveTicker() {
-            const container = document.getElementById('liveTicker');
-            container.innerHTML = '';
-       
-            const filteredSales = allSales.filter(sale => {
-                const saleDate = new Date(sale.timestamp);
-                return isSameDay(saleDate, tickerFilterDate);
-            });
-       
-            const latest = filteredSales.slice(0, 10);
-            latest.forEach(sale => {
-                const timeAgo = Math.floor((Date.now() - sale.timestamp) / 60000);
-                const item = document.createElement('div');
-                item.className = 'ticker-item';
-                item.innerHTML = `
-                    <div><strong>${sale.name}</strong></div>
-                    <div style="text-align:right;">
-                        <div style="font-weight:700;">R ${parseFloat(sale.revenue).toFixed(0)}</div>
-                        <div style="font-size:11px;color:var(--muted-text);">Cash • ${timeAgo} min ago</div>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
-       
-            if (latest.length === 0) {
-                container.innerHTML = `<div style="text-align:center;padding:20px;color:#999;">No sales for ${formatDateToDisplay(tickerFilterDate)}</div>`;
-            }
-        }
-        function updateLowStockPanel(snapshot) {
-            const data = snapshot.val();
-            if (!data) return;
-            const lowItems = Object.values(data).filter(i => i.qty <= 5);
-            document.getElementById('lowStockCount').textContent = `${lowItems.length} items`;
-            const container = document.getElementById('lowStockList');
-            container.innerHTML = '';
-            lowItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'alert-item';
-                div.innerHTML = `<strong>${item.name}</strong><br><span style="color:#D63031;">Only ${item.qty} units left</span>`;
-                container.appendChild(div);
-            });
-            const kpiEl = document.getElementById('kpiLowStock');
-            if (kpiEl) kpiEl.textContent = lowItems.length;
-        }
-        // Period toggle (unchanged)
-        document.querySelectorAll('.period-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentPeriod = btn.dataset.period;
-                updateKPICards();
-            });
-        });
-        // End of Day PDF with Tables and Charts (unchanged) ...
-        document.getElementById('endOfDayBtn').addEventListener('click', async () => {
-            const todaySales = allSales.filter(s => {
-                const d = new Date(s.timestamp);
-                const today = new Date();
-                return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear();
-            });
-       
-            const total = todaySales.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
-            const today = new Date();
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-       
-            // Header
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
-            doc.setTextColor(255, 215, 0); // Gold color
-            doc.text("AURA POS", 20, 20);
-       
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text("END OF DAY REPORT", 20, 28);
-       
-            // Date and Summary Box
-            doc.setFillColor(247, 249, 252);
-            doc.roundedRect(20, 35, 170, 30, 3, 3, 'F');
-       
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(11);
-            doc.text(`Date: ${today.toLocaleDateString('en-ZA')}`, 25, 45);
-            doc.text(`Total Revenue: R ${total.toFixed(2)}`, 25, 55);
-            doc.text(`Transactions: ${todaySales.length}`, 100, 45);
-            doc.text(`Avg Transaction: R ${todaySales.length > 0 ? (total / todaySales.length).toFixed(2) : '0.00'}`, 100, 55);
-            // Sales Table
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text("Sales Details", 20, 80);
-            const tableData = todaySales.map(sale => {
-                const date = new Date(sale.timestamp);
-                return [
-                    date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' }),
-                    sale.name,
-                    `R ${parseFloat(sale.revenue).toFixed(2)}`
-                ];
-            });
-            doc.autoTable({
-                startY: 85,
-                head: [['Time', 'Product', 'Revenue']],
-                body: tableData.length > 0 ? tableData : [['No sales', '', 'R 0.00']],
-                theme: 'striped',
-                headStyles: {
-                    fillColor: [255, 215, 0],
-                    textColor: 0,
-                    fontStyle: 'bold'
-                },
-                styles: {
-                    fontSize: 10,
-                    cellPadding: 5
-                },
-                columnStyles: {
-                    0: { cellWidth: 30 },
-                    1: { cellWidth: 'auto' },
-                    2: { cellWidth: 40, halign: 'right' }
-                }
-            });
-            // Check if we need a new page for charts
-            let chartY = doc.lastAutoTable.finalY + 20;
-            if (chartY > 200) {
-                doc.addPage();
-                chartY = 30;
-            }
-            // Sales by Hour Chart
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.text("Sales by Hour", 20, chartY);
-            // Group sales by hour
-            const salesByHour = {};
-            for (let i = 0; i < 24; i++) {
-                salesByHour[i] = 0;
-            }
-       
-            todaySales.forEach(sale => {
-                const hour = new Date(sale.timestamp).getHours();
-                salesByHour[hour] += parseFloat(sale.revenue || 0);
-            });
-            // Draw bar chart
-            const chartStartY = chartY + 10;
-            const chartHeight = 50;
-            const chartWidth = 170;
-            const barWidth = chartWidth / 24;
-            const maxValue = Math.max(...Object.values(salesByHour)) || 1;
-            // Chart background
-            doc.setDrawColor(200, 200, 200);
-            doc.setFillColor(255, 255, 255);
-            doc.rect(20, chartStartY, chartWidth, chartHeight, 'FD');
-            // Draw bars
-            Object.keys(salesByHour).forEach((hour, index) => {
-                const value = salesByHour[hour];
-                const barHeight = (value / maxValue) * (chartHeight - 10);
-           
-                if (value > 0) {
-                    // Gradient effect using multiple rectangles
-                    const gradientSteps = 5;
-                    for (let i = 0; i < gradientSteps; i++) {
-                        const ratio = i / gradientSteps;
-                        const r = Math.floor(255 - (255 - 255) * ratio);
-                        const g = Math.floor(255 - (255 - 215) * ratio);
-                        const b = Math.floor(255 - (255 - 0) * ratio);
-                        doc.setFillColor(r, g, b);
-                   
-                        const stepHeight = barHeight / gradientSteps;
-                        doc.rect(
-                            20 + (index * barWidth) + 1,
-                            chartStartY + chartHeight - 5 - ((i + 1) * stepHeight),
-                            barWidth - 2,
-                            stepHeight,
-                            'F'
-                        );
-                    }
-                }
-            });
-            // Chart axes
-            doc.setDrawColor(100, 100, 100);
-            doc.setLineWidth(0.5);
-            doc.line(20, chartStartY + chartHeight - 5, 20 + chartWidth, chartStartY + chartHeight - 5);
-            doc.line(20, chartStartY, 20, chartStartY + chartHeight - 5);
-            // X-axis labels (every 4 hours)
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(8);
-            doc.setTextColor(100, 100, 100);
-            for (let i = 0; i < 24; i += 4) {
-                doc.text(`${i}:00`, 20 + (i * barWidth) + 2, chartStartY + chartHeight + 5);
-            }
-            // Y-axis label
-            doc.setFontSize(9);
-            doc.text(`Max: R ${maxValue.toFixed(0)}`, 5, chartStartY + 5);
-            // Check for new page for pie chart
-            let pieY = chartStartY + chartHeight + 30;
-            if (pieY > 250) {
-                doc.addPage();
-                pieY = 40;
-            }
-            // Top Products Pie Chart
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.setTextColor(0, 0, 0);
-            doc.text("Top Selling Products", 20, pieY);
-            // Group sales by product
-            const salesByProduct = {};
-            todaySales.forEach(sale => {
-                if (!salesByProduct[sale.name]) {
-                    salesByProduct[sale.name] = { count: 0, revenue: 0 };
-                }
-                salesByProduct[sale.name].count++;
-                salesByProduct[sale.name].revenue += parseFloat(sale.revenue || 0);
-            });
-            const sortedProducts = Object.entries(salesByProduct)
-                .sort((a, b) => b[1].revenue - a[1].revenue)
-                .slice(0, 5);
-            // Draw simple pie chart
-            const pieCenterX = 60;
-            const pieCenterY = pieY + 40;
-            const pieRadius = 30;
-            const colors = [
-                [255, 215, 0], // Gold
-                [0, 184, 148], // Green
-                [9, 132, 227], // Blue
-                [108, 92, 231], // Purple
-                [255, 118, 117] // Red
-            ];
-            if (sortedProducts.length > 0) {
-                const totalProductRevenue = sortedProducts.reduce((sum, [, data]) => sum + data.revenue, 0);
-                let currentAngle = 0;
-                sortedProducts.forEach(([name, data], index) => {
-                    const sliceAngle = (data.revenue / totalProductRevenue) * 2 * Math.PI;
-               
-                    // Draw slice
-                    doc.setFillColor(...colors[index % colors.length]);
-                    doc.setDrawColor(255, 255, 255);
-                    doc.setLineWidth(1);
-               
-                    // Create pie slice using multiple line segments
-                    const steps = 20;
-                    const angleStep = sliceAngle / steps;
-                    let points = [{x: pieCenterX, y: pieCenterY}];
-               
-                    for (let i = 0; i <= steps; i++) {
-                        const angle = currentAngle + (i * angleStep);
-                        points.push({
-                            x: pieCenterX + pieRadius * Math.cos(angle),
-                            y: pieCenterY + pieRadius * Math.sin(angle)
-                        });
-                    }
-               
-                    // Draw the slice
-                    doc.lines(
-                        points.map((p, i) => i === 0 ? [0, 0] : [p.x - points[i-1].x, p.y - points[i-1].y]),
-                        pieCenterX,
-                        pieCenterY,
-                        [1, 1],
-                        'FD'
-                    );
-                    currentAngle += sliceAngle;
-                });
-                // Legend
-                let legendY = pieY + 15;
-                sortedProducts.forEach(([name, data], index) => {
-                    doc.setFillColor(...colors[index % colors.length]);
-                    doc.rect(110, legendY, 8, 8, 'F');
-                    doc.setFont("helvetica", "normal");
-                    doc.setFontSize(9);
-                    doc.setTextColor(0, 0, 0);
-                    doc.text(`${name} (${data.count}) - R ${data.revenue.toFixed(0)}`, 122, legendY + 6);
-                    legendY += 12;
-                });
-            } else {
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.text("No sales data available", pieCenterX - 20, pieCenterY);
-            }
-            // Footer
-            const pageCount = doc.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(8);
-                doc.setTextColor(150, 150, 150);
-                doc.text(`Page ${i} of ${pageCount} - Generated by AuraPOS`, 20, 290);
-                doc.text(`Pretoria, South Africa`, 160, 290);
-            }
-            doc.save(`AuraPOS_EndOfDay_${today.toISOString().slice(0,10)}.pdf`);
-            showToast('✅ End of Day PDF Downloaded with Tables & Charts');
-        });
-        // Settings (unchanged)
-        onValue(settingsRef, (snapshot) => {
-            const s = snapshot.val() || {};
-            document.getElementById('storeName').value = s.storeName || 'AuraPOS Pretoria';
-            document.getElementById('vatNumber').value = s.vatNumber || '';
-            document.getElementById('storeAddress').value = s.storeAddress || '';
-            document.getElementById('monthlyGoal').value = s.monthlyGoal || 25000;
-            document.getElementById('lowStockThreshold').value = s.lowStockThreshold || 5;
-        });
-        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-            const settingsData = {
-                storeName: document.getElementById('storeName').value,
-                vatNumber: document.getElementById('vatNumber').value,
-                storeAddress: document.getElementById('storeAddress').value,
-                monthlyGoal: parseFloat(document.getElementById('monthlyGoal').value),
-                lowStockThreshold: parseInt(document.getElementById('lowStockThreshold').value)
-            };
-            update(settingsRef, settingsData).then(() => {
-                showToast('✅ Settings saved');
-            });
-        });
-        // Manager realtime listeners (unchanged)
-        onValue(salesRef, (snapshot) => {
-            const data = snapshot.val();
-            allSales = data ? Object.values(data).sort((a,b) => b.timestamp - a.timestamp) : [];
-            updateLiveTicker();
-            updateKPICards();
-            updateTimeChartFromSales(allSales); // Update sales over time chart
-        });
-        onValue(inventoryRef, (snapshot) => {
-            updateLowStockPanel(snapshot);
-        });
-        // Initialize (unchanged)
-        window.addEventListener('load', () => {
-            updateKPICards();
-            // Initialize empty sales chart
-            updateTimeChartFromSales([]);
-        });
-        // ADDED BY REQUEST: when stock is finished for a product it must not allow people to order (unchanged)
-        onValue(inventoryRef, (snapshot) => {
-            setTimeout(() => {
-                const rows = document.querySelectorAll('.item-row');
-                rows.forEach(row => {
-                    const badge = row.querySelector('.stock-badge');
-                    if (badge && badge.classList.contains('stock-out')) {
-                        row.style.opacity = '0.65';
-                        row.style.pointerEvents = 'none';
-                        row.style.cursor = 'not-allowed';
-                        row.style.position = 'relative';
-                        if (!row.querySelector('.out-of-stock-overlay')) {
-                            const overlay = document.createElement('div');
-                            overlay.className = 'out-of-stock-overlay';
-                            overlay.style.position = 'absolute';
-                            overlay.style.top = '0';
-                            overlay.style.left = '0';
-                            overlay.style.width = '100%';
-                            overlay.style.height = '100%';
-                            overlay.style.background = 'rgba(214,48,49,0.18)';
-                            overlay.style.display = 'flex';
-                            overlay.style.alignItems = 'center';
-                            overlay.style.justifyContent = 'center';
-                            overlay.style.borderRadius = '16px';
-                            overlay.style.fontWeight = '800';
-                            overlay.style.color = '#D63031';
-                            overlay.style.fontSize = '13px';
-                            overlay.style.zIndex = '3';
-                            overlay.style.pointerEvents = 'none';
-                            overlay.innerHTML = '❌ STOCK FINISHED — CANNOT ORDER';
-                            row.appendChild(overlay);
-                        }
-                    }
-                });
-            }, 150);
-        });
-        // ADDED BY REQUEST: the live sales tracker time must be real time (unchanged)
-        setInterval(() => {
-            updateLiveTicker();
-        }, 35000);
-        // ADDED BY REQUEST ONLY: Sales History Log must show the sales as animated cards with their order number (unchanged)
-        function renderSalesCards(filteredData = null) {
-            const container = document.getElementById('salesCardsContainer');
-            container.innerHTML = '';
-            let dataToRender = filteredData || allSalesData.filter(sale => {
-                const saleDate = new Date(sale.timestamp);
-                return isSameDay(saleDate, salesFilterDate);
-            });
-            if (dataToRender.length === 0) {
-                container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:#999;">No sales recorded for ${formatDateToDisplay(salesFilterDate)}.</div>`;
-                return;
-            }
-            dataToRender.forEach((sale, index) => {
-                const date = new Date(sale.timestamp);
-                const orderNum = sale.orderNumber ? `#${sale.orderNumber}` : `#ORD-${String(10000 + index)}`;
-                const pointsEarned = Math.floor(parseFloat(sale.revenue) / 10);
-                const card = document.createElement('div');
-                card.className = 'sale-order-card';
-                card.style.animationDelay = `${index * 70}ms`;
-                card.innerHTML = `
-                    <div class="top-bar">
-                        <div class="order-number">${orderNum}</div>
-                        <div class="status-badge">✅ COMPLETED</div>
-                    </div>
-                    <div class="icon">🧾</div>
-                    <div class="sale-time">🕒 ${date.toLocaleDateString('en-ZA')} • ${date.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'})}</div>
-                    <div class="customer-info">👤 ${sale.customer || 'Walk-in Customer'}</div>
-                    <div class="product-name">${sale.name}</div>
-                    <div class="revenue">R ${parseFloat(sale.revenue).toFixed(2)}</div>
-                    <div class="points-earned">⭐ +${pointsEarned} Loyalty Points Earned</div>
-                    <div class="payment-info">
-                        <span>💳 Cash</span>
-                        <span>VAT incl.</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-        // Trigger cards on sales update and date change (added listeners only - no original lines modified)
-        const originalSalesUpdate = updateSalesHistory;
-        updateSalesHistory = function() {
-            originalSalesUpdate();
-            renderSalesCards();
-            updateAdvancedAnalytics();
+
+        window.closeAccessDeniedModal = function() {
+            document.getElementById('accessDeniedModal').style.display = 'none';
+            document.getElementById('cashierID').value = '';
+            document.getElementById('cashierID').focus();
         };
-        salesDateInput.addEventListener('change', () => {
-            setTimeout(() => {
-                renderSalesCards();
-                updateAdvancedAnalytics();
-            }, 50);
-        });
-        onValue(salesRef, (snapshot) => {
-            renderSalesCards();
-            updateAdvancedAnalytics();
-        });
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                renderSalesCards();
-                updateAdvancedAnalytics();
-            }, 1200);
-        });
-        // ADDED BY REQUEST: Advanced Sales Analytics (unchanged)
-        function updateAdvancedAnalytics() {
-            const filteredSales = allSalesData.filter(sale => {
-                const saleDate = new Date(sale.timestamp);
-                return isSameDay(saleDate, salesFilterDate);
-            });
-            const totalRevenue = filteredSales.reduce((sum, s) => sum + parseFloat(s.revenue || 0), 0);
-            const orderCount = filteredSales.length;
-            const avgOrder = orderCount ? (totalRevenue / orderCount).toFixed(2) : 0;
-            const totalPoints = Math.floor(totalRevenue / 10);
-            const container = document.getElementById('analyticsSummaryGrid');
-            container.innerHTML = `
-                <div class="analytics-kpi">
-                    <div class="value">R ${totalRevenue.toFixed(2)}</div>
-                    <div class="label">Total Revenue</div>
-                </div>
-                <div class="analytics-kpi">
-                    <div class="value">${orderCount}</div>
-                    <div class="label">Orders Today</div>
-                </div>
-                <div class="analytics-kpi">
-                    <div class="value">R ${avgOrder}</div>
-                    <div class="label">Avg Order Value</div>
-                </div>
-                <div class="analytics-kpi">
-                    <div class="value">${totalPoints}</div>
-                    <div class="label">Loyalty Points Issued</div>
-                </div>
-            `;
-        }
-        // ADDED BY REQUEST: Card Filtering Options (unchanged)
-        function applyCardFilters() {
-            const searchTerm = document.getElementById('cardSearchInput').value.toLowerCase().trim();
-            const tier = document.getElementById('tierFilter').value;
-            const sortMode = document.getElementById('sortFilter').value;
-            let filtered = allSalesData.filter(sale => {
-                const saleDate = new Date(sale.timestamp);
-                if (!isSameDay(saleDate, salesFilterDate)) return false;
-                const matchesSearch = !searchTerm || sale.name.toLowerCase().includes(searchTerm);
-                let matchesTier = true;
-                if (tier !== 'all') {
-                    const idx = allSalesData.indexOf(sale);
-                    const saleTier = idx % 4 === 0 ? 'Gold' : idx % 3 === 0 ? 'Silver' : 'Bronze';
-                    matchesTier = saleTier === tier;
-                }
-                return matchesSearch && matchesTier;
-            });
-            // Sort
-            if (sortMode === 'newest') {
-                filtered.sort((a, b) => b.timestamp - a.timestamp);
-            } else if (sortMode === 'oldest') {
-                filtered.sort((a, b) => a.timestamp - a.timestamp);
-            } else if (sortMode === 'high') {
-                filtered.sort((a, b) => parseFloat(b.revenue) - parseFloat(a.revenue));
-            } else if (sortMode === 'low') {
-                filtered.sort((a, b) => parseFloat(a.revenue) - parseFloat(b.revenue));
-            }
-            renderSalesCards(filtered);
-        }
-        // Auto-apply filters on input change (real-time) (unchanged)
-        setTimeout(() => {
-            const searchInput = document.getElementById('cardSearchInput');
-            const tierSelect = document.getElementById('tierFilter');
-            const sortSelect = document.getElementById('sortFilter');
-            if (searchInput) searchInput.addEventListener('input', applyCardFilters);
-            if (tierSelect) tierSelect.addEventListener('change', applyCardFilters);
-            if (sortSelect) sortSelect.addEventListener('change', applyCardFilters);
-        }, 800);
-        // ==================== NEW EMPLOYEE REGISTRATION ====================
-        function updateEmployeesTable() {
-            const tbody = document.getElementById('employeesBody');
-            tbody.innerHTML = '';
-            let count = 0;
-            if (employeesData) {
-                const sorted = Object.values(employeesData).sort((a, b) => (b.registered || 0) - (a.registered || 0));
-                sorted.forEach(emp => {
-                    count++;
-                    const tr = document.createElement('tr');
-                    tr.className = 'item-row';
-                    tr.innerHTML = `
-                        <td><strong>${emp.id}</strong></td>
-                        <td>${emp.name}</td>
-                        <td><span class="stock-badge stock-safe">${emp.position}</span></td>
-                        <td>${emp.phone || '—'}</td>
-                        <td>${emp.email || '—'}</td>
-                        <td>${emp.registered ? new Date(emp.registered).toLocaleDateString('en-ZA') : '—'}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-            if (count === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#999; padding:60px;">No employees registered yet. Add one above.</td></tr>`;
-            }
-        }
-        onValue(employeesRef, (snapshot) => {
-            employeesData = snapshot.val() || {};
-            updateEmployeesTable();
-        });
-        document.getElementById('registerEmpBtn').addEventListener('click', () => {
-            const name = document.getElementById('empName').value.trim();
-            const position = document.getElementById('empPosition').value;
-            const phone = document.getElementById('empPhone').value.trim();
-            const email = document.getElementById('empEmail').value.trim();
-            if (!name || !position) {
-                showToast('Full name and position are required');
+
+        window.handleLogin = async function() {
+            const id = document.getElementById('cashierID').value.trim().toUpperCase();
+            if(!id) {
+                showMessageModal("Required Field", "Please enter your employee ID.", 'error', '--danger');
                 return;
             }
-            // Generate sequential unique ID (EMP1001, EMP1002...)
-            let maxNum = 0;
-            Object.values(employeesData).forEach(emp => {
-                if (emp.id && emp.id.startsWith('EMP')) {
-                    const num = parseInt(emp.id.slice(3));
-                    if (!isNaN(num)) maxNum = Math.max(maxNum, num);
+
+            const employeeRef = ref(db, `employee/${id}`);
+            get(employeeRef).then((snapshot) => {
+                if(snapshot.exists()) {
+                    const data = snapshot.val();
+                    const name = data.name;
+                    if(name) {
+                        currentCashier = { name, id };
+                        localStorage.setItem('aura_cashier', JSON.stringify(currentCashier));
+                        document.getElementById('activeCashierName').innerText = name;
+                        document.getElementById('loginOverlay').style.display = 'none';
+                        showMessageModal("Login Successful", `Welcome, ${name}!`, 'success');
+                    } else {
+                        showAccessDeniedModal(id);
+                    }
+                } else {
+                    showAccessDeniedModal(id);
                 }
+            }).catch(err => {
+                showMessageModal("Error", "Login failed: " + err.message, 'error', '--danger');
             });
-            const newNum = maxNum + 1;
-            const empId = `EMP${newNum.toString().padStart(4, '0')}`;
-            push(employeesRef, {
-                id: empId,
-                name: name,
-                position: position,
-                phone: phone,
-                email: email,
-                registered: Date.now()
-            }).then(() => {
-                document.getElementById('empName').value = '';
-                document.getElementById('empPhone').value = '';
-                document.getElementById('empEmail').value = '';
-                showToast(`✅ ${name} registered successfully!<br><b>ID: ${empId}</b>`);
-            });
+        };
+
+        window.handleLogout = function() {
+            showMessageModal(
+                "Confirm Exit",
+                "Are you sure you want to sign out and exit the system?",
+                'info',
+                '--danger',
+                true
+            );
+            document.getElementById('confirmLogoutBtn').onclick = function() {
+                closeMessageModal();
+                localStorage.removeItem('aura_cashier');
+                location.reload();
+            };
+        };
+
+        function showMessageModal(title, message, icon = 'info', color = '--success', showConfirm = false) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+            const iconEl = document.getElementById('modalIcon');
+            iconEl.textContent = icon === 'success' ? '✔' : icon === 'error' ? '✖' : '!';
+            iconEl.style.color = `var(${color})`;
+            document.getElementById('confirmLogoutBtn').style.display = showConfirm ? 'block' : 'none';
+            document.getElementById('okOnlyBtn').style.display = showConfirm ? 'none' : 'block';
+            document.getElementById('messageModal').style.display = 'flex';
+        }
+
+        window.closeMessageModal = function() {
+            document.getElementById('messageModal').style.display = 'none';
+        };
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // AUTO-LOGIN & INITIALIZATION
+        // ════════════════════════════════════════════════════════════════════════════════
+
+        window.addEventListener('load', () => {
+            const savedCashier = localStorage.getItem('aura_cashier');
+            if(savedCashier) {
+                try {
+                    currentCashier = JSON.parse(savedCashier);
+                    // Verify employee still exists in database
+                    const empRef = ref(db, `employee/${currentCashier.id}`);
+                    get(empRef).then((snapshot) => {
+                        if(snapshot.exists()) {
+                            document.getElementById('activeCashierName').innerText = currentCashier.name;
+                            document.getElementById('loginOverlay').style.display = 'none';
+                            showMessageModal("Welcome Back", `Logged in as ${currentCashier.name}`, 'success');
+                        } else {
+                            // Employee no longer exists
+                            localStorage.removeItem('aura_cashier');
+                            showAccessDeniedModal(currentCashier.id);
+                            document.getElementById('loginOverlay').style.display = 'flex';
+                        }
+                    });
+                } catch(e) {
+                    localStorage.removeItem('aura_cashier');
+                }
+            }
         });
-        // ==================== END OF NEW EMPLOYEE CODE ====================
+
+        // ════════════════════════════════════════════════════════════════════════════════
+        // POS SYSTEM FUNCTIONS
+        // ════════════════════════════════════════════════════════════════════════════════
+
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`view-${tab}`).classList.add('active');
+            event.currentTarget.classList.add('active');
+        };
+
+        onValue(inventoryRef, (snapshot) => {
+            inventoryData = snapshot.val() || {};
+            renderCategories();
+            renderMenu();
+        });
+
+        function renderCategories() {
+            const container = document.getElementById('posCategories');
+            if(!container) return;
+            container.innerHTML = '';
+            const categories = new Set();
+            Object.values(inventoryData).forEach(item => categories.add(item.category || 'General'));
+           
+            const allBtn = document.createElement('button');
+            allBtn.className = `cat-btn ${!selectedCategory ? 'active' : ''}`;
+            allBtn.innerText = "All";
+            allBtn.onclick = () => { selectedCategory = ''; renderCategories(); renderMenu(); };
+            container.appendChild(allBtn);
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = `cat-btn ${selectedCategory === cat ? 'active' : ''}`;
+                btn.innerText = cat;
+                btn.onclick = () => { selectedCategory = cat; renderCategories(); renderMenu(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderMenu() {
+            const grid = document.getElementById('posMenuGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            Object.entries(inventoryData).forEach(([key, item]) => {
+                const cat = item.category || 'General';
+                if (selectedCategory && cat !== selectedCategory) return;
+               
+                const finalPrice = item.discount > 0 ? (item.price - (item.price * item.discount / 100)) : item.price;
+                const card = document.createElement('div');
+                card.className = 'menu-item';
+                card.innerHTML = `
+                    <img src="${item.imageURL || 'https://via.placeholder.com/150'}" alt="${item.name}">
+                    <h4>${item.name}</h4>
+                    <p>R ${parseFloat(finalPrice).toFixed(2)}</p>
+                    ${item.qty <= 0 ? '<span style="color:red; font-size:10px;">Out of Stock</span>' : ''}
+                `;
+                card.onclick = () => {
+                    if(item.qty > 0) addToCart(key, item.name, finalPrice);
+                    else showMessageModal("Out of Stock", `${item.name} is currently out of stock.`, 'error', '--danger');
+                };
+                grid.appendChild(card);
+            });
+        }
+
+        function addToCart(key, name, price) {
+            if (!cart[key]) cart[key] = {name, price: parseFloat(price), qty: 0};
+            cart[key].qty += 1;
+            updateCart();
+        }
+
+        window.clearCart = function() { cart = {}; updateCart(); }
+
+        function updateCart() {
+            const list = document.getElementById('posCartList');
+            list.innerHTML = '';
+            let total = 0;
+           
+            Object.entries(cart).forEach(([key, item]) => {
+                const sub = item.price * item.qty;
+                total += sub;
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-price">R ${item.price.toFixed(2)} x ${item.qty} = R ${sub.toFixed(2)}</div>
+                    </div>
+                    <div class="cart-item-qty">
+                        <button class="minus">-</button>
+                        <span>${item.qty}</span>
+                        <button class="plus">+</button>
+                    </div>
+                `;
+                li.querySelector('.plus').onclick = () => { item.qty += 1; updateCart(); };
+                li.querySelector('.minus').onclick = () => {
+                    item.qty -= 1;
+                    if (item.qty <= 0) delete cart[key];
+                    updateCart();
+                };
+                list.appendChild(li);
+            });
+            currentTotal = total;
+            const vat = total * 15 / 115;
+            const subtotal = total - vat;
+            document.getElementById('cartSubtotal').innerText = subtotal.toFixed(2);
+            document.getElementById('cartVat').innerText = vat.toFixed(2);
+            document.getElementById('cartGrandTotal').innerText = total.toFixed(2);
+            document.getElementById('btnChargeAmount').innerText = `R ${total.toFixed(2)}`;
+            document.getElementById('btnOpenTender').disabled = total <= 0;
+        }
+
+        document.getElementById('btnOpenTender').onclick = () => {
+            document.getElementById('tenderTotalDue').innerText = currentTotal.toFixed(2);
+            document.getElementById('tenderInput').value = '';
+            document.getElementById('changeDue').innerText = '0.00';
+            document.getElementById('btnConfirmPayment').disabled = true;
+            document.getElementById('tenderModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('tenderInput').focus(), 100);
+        };
+
+        window.closeTenderModal = function() {
+            document.getElementById('tenderModal').style.display = 'none';
+        };
+
+        window.setTender = function(type) {
+            const input = document.getElementById('tenderInput');
+            if(type === 'exact') input.value = currentTotal.toFixed(2);
+            calculateChange();
+        };
+
+        window.addTender = function(amount) {
+            const input = document.getElementById('tenderInput');
+            let current = parseFloat(input.value) || 0;
+            input.value = (current + amount).toFixed(2);
+            calculateChange();
+        };
+
+        window.calculateChange = function() {
+            const tendered = parseFloat(document.getElementById('tenderInput').value) || 0;
+            const change = tendered - currentTotal;
+            const changeDisplay = document.getElementById('changeDue');
+            const confirmBtn = document.getElementById('btnConfirmPayment');
+           
+            if (change >= 0) {
+                changeDisplay.innerText = change.toFixed(2);
+                confirmBtn.disabled = false;
+            } else {
+                changeDisplay.innerText = "0.00";
+                confirmBtn.disabled = true;
+            }
+        };
+
+        function printReceipt(orderNum, items, total) {
+            const receiptDiv = document.getElementById('receipt-print');
+            const now = new Date();
+            let itemsHtml = items.map(i => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:13px;">
+                    <span>${i.qty} × ${i.name}</span>
+                    <span>R${(i.price * i.qty).toFixed(2)}</span>
+                </div>`).join('');
+           
+            receiptDiv.innerHTML = `
+                <div style="font-weight:bold; font-size:16px;">AURAPOS RECEIPT</div>
+                <div style="margin:6px 0; font-size:13px;">Order #${orderNum}</div>
+                <hr style="border-top:1px dashed #000; margin:8px 0;">
+                <div style="text-align:left; font-size:13px; line-height:1.4;">
+                    <div><strong>Cashier:</strong> ${currentCashier.name} (ID: ${currentCashier.id})</div>
+                    <div><strong>Date:</strong> ${now.toLocaleDateString('en-ZA')}</div>
+                    <div><strong>Time:</strong> ${now.toLocaleTimeString('en-ZA', {hour12:false})}</div>
+                </div>
+                <hr style="border-top:1px dashed #000; margin:10px 0;">
+                <div style="text-align:left;">
+                    ${itemsHtml}
+                </div>
+                <hr style="border-top:1px dashed #000; margin:10px 0;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px;">
+                    <span>TOTAL</span>
+                    <span>R ${total.toFixed(2)}</span>
+                </div>
+                <br>
+                <div style="font-size:12px;">Thank you for shopping with us!</div>
+            `;
+            window.print();
+        }
+
+        window.triggerReceiptPrint = function() {
+            if(lastOrderDetails) {
+                printReceipt(
+                    lastOrderDetails.num,
+                    lastOrderDetails.items,
+                    lastOrderDetails.total
+                );
+            }
+        };
+
+        window.closeSuccessModal = function() {
+            document.getElementById('successModal').style.display = 'none';
+            lastOrderDetails = null;
+        };
+
+        window.processCashierOrder = function() {
+            const timestamp = Date.now();
+            const orderNumber = Math.floor(1000 + Math.random() * 9000);
+            let itemsList = [];
+            Object.entries(cart).forEach(([key, item]) => {
+                const currentQty = inventoryData[key]?.qty || 0;
+                update(ref(db, `inventory/${key}`), {qty: currentQty - item.qty});
+               
+                itemsList.push({name: item.name, qty: item.qty, price: item.price});
+                push(salesRef, {
+                    name: item.name,
+                    revenue: (item.price * item.qty).toFixed(2),
+                    timestamp: timestamp,
+                    qty: item.qty,
+                    customer: "In-Store Customer",
+                    cell: "Walk-in",
+                    source: "Cashier",
+                    cashierName: currentCashier.name,
+                    cashierID: currentCashier.id,
+                    status: "Completed",
+                    orderNumber: orderNumber
+                });
+            });
+            lastOrderDetails = {
+                num: orderNumber,
+                items: itemsList,
+                total: currentTotal
+            };
+            document.getElementById('successOrderNumber').innerText = orderNumber;
+            document.getElementById('successModal').style.display = 'flex';
+           
+            closeTenderModal();
+            clearCart();
+        };
+
+        onValue(salesRef, (snapshot) => {
+            allSales = snapshot.val() || {};
+            renderOrderQueue(allSales, document.getElementById('searchOrders')?.value || '');
+        });
+
+        window.filterOrders = function(value) {
+            renderOrderQueue(allSales, value);
+        };
+
+        function renderOrderQueue(salesData, search = '') {
+            const groupedOrders = {};
+           
+            Object.entries(salesData).forEach(([saleKey, sale]) => {
+                const orderId = sale.orderNumber
+                    ? `order_${sale.orderNumber}`
+                    : `${sale.customer || 'guest'}_${Math.floor(sale.timestamp / 1000)}`;
+               
+                if (!groupedOrders[orderId]) {
+                    groupedOrders[orderId] = {
+                        displayId: sale.orderNumber || Math.floor((sale.timestamp % 1000000) / 100),
+                        customer: sale.customer || "Guest",
+                        cell: sale.cell || "",
+                        time: new Date(sale.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                        rawTimestamp: sale.timestamp,
+                        items: [],
+                        total: 0,
+                        status: sale.status || 'Pending',
+                        saleKeys: []
+                    };
+                }
+               
+                groupedOrders[orderId].items.push(`${sale.qty}x ${sale.name}`);
+                groupedOrders[orderId].total += parseFloat(sale.revenue || 0);
+                groupedOrders[orderId].saleKeys.push(saleKey);
+            });
+           
+            const sortedOrders = Object.values(groupedOrders).sort((a, b) => b.rawTimestamp - a.rawTimestamp);
+            const grid = document.getElementById('ordersGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            sortedOrders.filter(order => {
+                const term = search.toLowerCase();
+                return !term || order.customer.toLowerCase().includes(term) || String(order.displayId).includes(term);
+            }).forEach(order => {
+                const isPending = order.status !== 'Completed';
+                const card = document.createElement('div');
+                card.className = `order-card ${isPending ? 'pending' : 'completed'}`;
+               
+                let actionButton = isPending
+                    ? `<button class="btn-complete" onclick="markOrderCompleted(${JSON.stringify(order.saleKeys).replace(/"/g,'&quot;')})">Mark Complete</button>`
+                    : `✓ Done`;
+               
+                card.innerHTML = `
+                    <div class="order-header">
+                        <span class="order-id">#${order.displayId}</span>
+                        <span class="order-status-badge order-status-${order.status.toLowerCase()}">${order.status}</span>
+                    </div>
+                    <div class="order-time">${order.time}</div>
+                    <div class="order-customer">${order.customer}</div>
+                    <ul class="order-items">${order.items.map(i => `<li>${i}</li>`).join('')}</ul>
+                    <div class="order-footer">
+                        <span style="font-weight:800;">R ${order.total.toFixed(2)}</span>
+                        ${actionButton}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.markOrderCompleted = function(saleKeys) {
+            saleKeys.forEach(key => {
+                update(ref(db, `sales/${key}`), { status: 'Completed' });
+            });
+        };
     </script>
 </body>
 </html>

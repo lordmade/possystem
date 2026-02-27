@@ -915,59 +915,8 @@
             </div>
 
             <!-- ===== NEW: KIOSK CAROUSEL MANAGER ===== -->
-            <div class="card">
-                <div style="display:flex; align-items:center; margin-bottom: 25px; flex-wrap: wrap; gap: 12px;">
-                    <div>
-                        <h3 style="margin-bottom: 4px;">
-                             Kiosk Carousel Images
-                            <span class="carousel-count-badge" id="carouselCountBadge">0 slides</span>
-                        </h3>
-                        <p style="color: var(--muted-text); font-size: 14px;">Upload promotional images that appear on the customer-facing kiosk slideshow.</p>
-                    </div>
-                </div>
-
-                <!-- Upload Form -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; align-items: start;">
-                    <div>
-                        <div class="carousel-upload-area" id="carouselDropArea">
-                            <input type="file" id="carouselImageInput" accept="image/*">
-                            <div class="carousel-upload-icon">📸</div>
-                            <div class="carousel-upload-text">Click to choose slide image</div>
-                            <div class="carousel-upload-sub">JPG, PNG, WEBP — recommended 1920×500px</div>
-                        </div>
-                        <img id="carouselImgPreview" class="carousel-preview-img" src="" alt="Preview">
-                    </div>
-                    <div>
-                        <div class="input-group">
-                            <label>Slide Headline (optional)</label>
-                            <input type="text" id="carouselCaption" placeholder="e.g. Happy Hour 4–6 PM">
-                        </div>
-                        <div class="input-group">
-                            <label>Slide Subtext (optional)</label>
-                            <input type="text" id="carouselSubtext" placeholder="e.g. 20% OFF all drinks & sides">
-                        </div>
-                        <button class="btn-pill" id="addCarouselSlideBtn" style="margin-top: 8px;">
-                            <span> Upload & Add to Kiosk</span>
-                        </button>
-                        <div id="carouselUploadProgress" style="display:none; margin-top:12px; text-align:center; color:var(--muted-text); font-size:14px; font-weight:600;">
-                             Uploading image...
-                        </div>
-                    </div>
-                </div>
-
+            
                 <!-- Current Slides Grid -->
-                <div style="border-top: 1px solid #f0f0f0; padding-top: 25px;">
-                    <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 18px; color: #333;">Current Carousel Slides</h4>
-                    <div class="carousel-slides-grid" id="carouselSlidesGrid">
-                        <div class="carousel-empty-state">
-                            <div class="empty-icon">🎠</div>
-                            <div>No carousel slides yet.</div>
-                            <div style="font-size:13px; margin-top:4px;">Upload an image above to get started.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- ===== END KIOSK CAROUSEL MANAGER ===== -->
 
             <!-- ===== NEW: KIOSK PROMO SLIDES MANAGER ===== -->
             <div class="card" style="margin-top: 30px;">
@@ -986,7 +935,7 @@
                     <div>
                         <div class="carousel-upload-area" id="promoDropArea">
                             <input type="file" id="promoImageInput" accept="image/*">
-                            <div class="carousel-upload-icon">🖼️</div>
+                            <div class="carousel-upload-icon"></div>
                             <div class="carousel-upload-text">Click to choose promo image</div>
                             <div class="carousel-upload-sub">JPG, PNG, WEBP — recommended 1920×500px</div>
                         </div>
